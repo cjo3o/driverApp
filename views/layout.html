@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>{{title}}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+            background-color: #3B4252;
+            color: white;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ffffff;
+        }
+
+        .logo {
+            flex-grow: 1;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .back , .logout {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .top img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .bottom {
+            position: fixed;
+            width: 100%;
+            padding: 10px 0;
+            bottom: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
+            border-top: 1px solid #ffffff;
+        }
+
+        .bottom img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .bottom p {
+            margin: 0;
+            color: #ffffff;
+            font-size: 12px;
+        }
+    </style>
+    {% block style %}
+    {% endblock %}
+</head>
+<body>
+<div class="top">
+    <button class="back" type="button" onclick="back()">
+        <img src="../public/icons/backward.png" alt="back">
+    </button>
+    <a class="logo" href="/">WITH GO</a>
+    <button class="logout" type="button" onclick="logout()">
+        <img src="../public/icons/logout.png" alt="logout">
+    </button>
+</div>
+{% block content %}
+{% endblock %}
+<div class="bottom">
+    <a class="bell" href="/bell">
+        <img src="../public/icons/bell.png" alt="bell">
+        <p>알림</p>
+    </a>
+    <a class="home" href="/">
+        <img src="../public/icons/home.png" alt="home">
+        <p>홈</p>
+    </a>
+    <a class="money" href="/money">
+        <img src="../public/icons/money.png" alt="money">
+        <p>정산</p>
+    </a>
+</div>
+
+<script>
+    function logout() {
+        localStorage.removeItem('token');
+        window.location.href = '/login'; // 실제 경로에 맞게
+    }
+</script>
+{% block script %}
+{% endblock %}
+
+</body>
+</html>
