@@ -2,12 +2,46 @@
 {% block style %}
 {% endblock %}
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-center text-white mb-8">정산 금액은</h1>
-    <div class="bg-gray-700 rounded-lg p-6 shadow-lg">
-        <p class="text-lg text-gray-200 text-center">정산 페이지입니다.</p>
+
+<div class="container">
+    <!-- Top -->
+    <div class="name-top px-[8vw] py-[2vw]">
+        <div class="flex justify-end">
+            <!-- bold 기사 이름 -->
+            <h1 class="text-[7vw] text-right"> 기사님의</h1>
+        </div>
+        <h1 class="text-[7vw] text-right">정산 금액은</h1>
+        <div class="flex justify-end">
+            <!-- bold 정산 금액 -->
+            <h1 class="text-[7vw] text-right">원 입니다.</h1>
+        </div>
+    </div>
+    <!-- Middle -->
+    <div class="name-middle absolute left-1/2 -translate-x-1/2 top-[50vw] px-[8vw] py-[2vw]
+    flex justify-around bg-white rounded-lg shadow-lg w-[92vw] max-w-[70vw] min-h-[16vw] items-center">
+        <button class="bg-transparent border-none cursor-pointer" type="button" onclick="prev()">
+            <img src="../public/icons/prev.png" alt="prev" class="w-6 h-6">
+        </button>
+        <div class="name-totaldata">
+            <div class="flex justify-center">
+                <!-- bold 월 -->
+                <p class="text-[7vw] text-bold text-black text-center">월</p>
+            </div>
+            <div class="flex justify-between">
+                <p class="text-[7vw] text-bold text-black text-center">TOTAL</p>
+                <!-- bold purple 월별 토탈 건수 -->
+            </div>
+        </div>
+        <button class="bg-transparent border-none cursor-pointer" type="button" onclick="next()">
+            <img src="../public/icons/next.png" alt="next" class="w-6 h-6">
+        </button>
+    </div>
+
+    <!-- list -->
+    <div class=" bg-white mt-[15vw] overflow-y-auto pb-[50vw]">
     </div>
 </div>
+
 {% endblock %}
 {% block script %}
 {% endblock %}
