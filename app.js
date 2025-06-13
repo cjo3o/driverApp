@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(express.static('public'));
 
-app.set('port', 8000);
+app.set('port', 7778);
 
 nunjucks.configure("views",{
     express:app,
