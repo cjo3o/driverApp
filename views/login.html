@@ -111,7 +111,7 @@
         console.log('로그인 시도:', $id.value);
         
         try {
-            const result = await axios.post('http://localhost:7778/login', {
+            const result = await axios.post('http://localhost:7777/login', {
                 id: $id.value,
                 pw: $pw.value,
             });
