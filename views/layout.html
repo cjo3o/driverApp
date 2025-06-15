@@ -11,7 +11,7 @@
     {% endblock %}
 </head>
 <body class="m-0 p-0 bg-gray-800 text-white">
-<div class="flex justify-between items-center p-3 border-b border-white">
+<div class="bg-gray-800 fixed top-0 w-full p-3 flex justify-between items-center border-b border-white">
     <button class="bg-transparent border-none cursor-pointer" type="button" onclick="back()">
         <img src="../public/icons/grayarrow.png" alt="back" class="w-6 h-6">
     </button>
@@ -42,6 +42,10 @@
         localStorage.removeItem('token');
         window.location.href = '/login'; // 실제 경로에 맞게
     }
+
+    function back() {
+  window.history.back();
+}
 </script>
 {% block script %}
 {% endblock %}

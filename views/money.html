@@ -5,7 +5,7 @@
 
 <div class="container">
     <!-- Top -->
-    <div class="name-top px-[8vw] py-[2vw]">
+    <div class="name-top px-[7vw] py-[2vw] mt-[15vw]">
         <div class="flex justify-end">
             <!-- bold 기사 이름 -->
             <h1 class="text-[7vw] text-right"> 기사님의</h1>
@@ -18,9 +18,9 @@
     </div>
     <!-- Middle -->
     <div class="name-middle absolute left-1/2 -translate-x-1/2 top-[50vw] px-[8vw] py-[2vw]
-    flex justify-around bg-white rounded-lg shadow-lg w-[92vw] max-w-[70vw] min-h-[16vw] items-center">
+    flex justify-around bg-white rounded-xl shadow-lg w-[85vw] min-h-[16vw] items-center">
         <button class="bg-transparent border-none cursor-pointer" type="button" onclick="prev()">
-            <img src="../public/icons/prev.png" alt="prev" class="w-6 h-6">
+            <img src="../public/icons/prev.png" alt="prev" class="w-[7vw] h-[7vw]">
         </button>
         <div class="name-totaldata">
             <div class="flex justify-center">
@@ -33,12 +33,19 @@
             </div>
         </div>
         <button class="bg-transparent border-none cursor-pointer" type="button" onclick="next()">
-            <img src="../public/icons/next.png" alt="next" class="w-6 h-6">
+            <img src="../public/icons/next.png" alt="next" class="w-[7vw] h-[7vw]">
         </button>
     </div>
 
     <!-- list -->
-    <div class=" bg-white mt-[15vw] overflow-y-auto pb-[50vw]">
+    <div class=" bg-white mt-[15vw] overflow-y-auto pb-[100vw] mb-[13vw]">
+        <div class="flex justify-between mt-[15vw] text-black text-[3vw] px-[10vw] py-[2vw] border-b-[0.5vw] border-dotted border-black">
+            <p>날짜</p>
+            <div class="flex justify-end gap-[7vw]">
+                <p>건수</p>
+                <p>상세</p>
+            </div>
+        </div>
     </div>
 </div>
 
