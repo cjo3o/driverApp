@@ -21,7 +21,7 @@ app.use(expressSession({
     name: "session-cookie",
 }));
 
-app.set('port', 1000);
+app.set('port', 7777);
 
 app.use("/public",express.static('public'));
 
@@ -36,11 +36,13 @@ const mainRouter = require('./routes/mainRouter.js');
 const loginRouter = require('./routes/loginRouter.js');
 const bellRouter = require('./routes/bellRouter.js');
 const moneyRouter = require('./routes/moneyRouter.js');
+const detailRouter = require('./routes/detailRouter.js');
 
 app.use('/', mainRouter);
 app.use('/login', loginRouter);
 app.use('/bell', bellRouter);
 app.use('/money', moneyRouter);
+app.use('/detail', detailRouter);
 
 app.listen(app.get('port'), ()=>{
     console.log(app.get('port'), '번 포트에서 대기 중')

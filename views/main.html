@@ -5,14 +5,14 @@
 <div class="title p-[4vw] flex justify-between items-center">
     <div>
         <h1 class="text-[10vw] font-bold text-white">안녕하세요,</h1>
-        <h1 class="text-[10vw] font-bold text-white">ㅇㅇㅇ기사님</h1>
+        <h1 class="text-[10vw] font-bold text-white">{{user.name}}기사님</h1>
     </div>
     <div class="profile bg-white rounded-full w-[20vw] h-[20vw]">
 
     </div>
 </div>
 <div class="date text-[5vw] px-[4vw]">
-    오늘은 ㅇㅇ월 ㅇㅇ일 ㅇ요일입니다.
+    오늘은 {{month}}월 {{date}}일 {{dayOfWeek}}요일입니다.
 </div>
 <div class="mt-[5vw] text-[4.5vw] flex justify-center items-center gap-[15vw]">
     <div class="order_btn border-t-2 p-[1vw]">
@@ -22,14 +22,11 @@
         MY LIST
     </div>
 </div>
-<div class="order_list p-[4vw] h-full max-h-[47vh] mt-[1.5vw] flex flex-col gap-[3vw] overflow-y-auto">
+<div class="order_list px-[4vw] py-[2vh] h-full max-h-[47vh] mt-[1.5vw] flex flex-col gap-[3vw] overflow-y-auto">
     <div class="card p-[1vw] bg-white rounded-[3.5vw]">
         <div class="card_head pb-[1vw] flex justify-between border-b-2 border-dotted border-[#cccccc]">
             <p class="px-[2vw] text-[4vw] text-[#ABABAB]">
                 ORDER
-            </p>
-            <p class="px-[2vw] text-[4vw] text-red-700">
-                PICK
             </p>
         </div>
         <div class="card_body px-[2vw] pt-[3vw] text-black text-[4vw]">
@@ -67,9 +64,6 @@
             <p class="px-[2vw] text-[4vw] text-[#ABABAB]">
                 ORDER
             </p>
-            <p class="px-[2vw] text-[4vw] text-red-700">
-                PICK
-            </p>
         </div>
         <div class="card_body px-[2vw] pt-[3vw] text-black text-[4vw]">
             <div class="from">
@@ -106,8 +100,76 @@
             <p class="px-[2vw] text-[4vw] text-[#ABABAB]">
                 ORDER
             </p>
-            <p class="px-[2vw] text-[4vw] text-red-700">
-                PICK
+        </div>
+        <div class="card_body px-[2vw] pt-[3vw] text-black text-[4vw]">
+            <div class="from">
+                <div class="from_head flex items-center gap-[2vw]">
+                    <p class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
+                        F
+                    </p>
+                    <p>
+                        경주역
+                    </p>
+                </div>
+                <div class="from_body ml-[9vw]">
+                    2020-01-01 / 12:00
+                </div>
+            </div>
+            <div class="to">
+                <div class="to_head flex items-center gap-[2vw]">
+                    <p class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
+                        T
+                    </p>
+                    <p>
+                        경주역
+                    </p>
+                </div>
+                <div class="to_body ml-[9vw]">
+                    2020-01-01 / 12:00
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card p-[1vw] bg-white rounded-[3.5vw]">
+        <div class="card_head pb-[1vw] flex justify-between border-b-2 border-dotted border-[#cccccc]">
+            <p class="px-[2vw] text-[4vw] text-[#ABABAB]">
+                ORDER
+            </p>
+        </div>
+        <div class="card_body px-[2vw] pt-[3vw] text-black text-[4vw]">
+            <div class="from">
+                <div class="from_head flex items-center gap-[2vw]">
+                    <p class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
+                        F
+                    </p>
+                    <p>
+                        경주역
+                    </p>
+                </div>
+                <div class="from_body ml-[9vw]">
+                    2020-01-01 / 12:00
+                </div>
+            </div>
+            <div class="to">
+                <div class="to_head flex items-center gap-[2vw]">
+                    <p class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
+                        T
+                    </p>
+                    <p>
+                        경주역
+                    </p>
+                </div>
+                <div class="to_body ml-[9vw]">
+                    2020-01-01 / 12:00
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="card p-[1vw] bg-white rounded-[3.5vw]">
+        <div class="card_head pb-[1vw] flex justify-between border-b-2 border-dotted border-[#cccccc]">
+            <p class="px-[2vw] text-[4vw] text-[#ABABAB]">
+                ORDER
             </p>
         </div>
         <div class="card_body px-[2vw] pt-[3vw] text-black text-[4vw]">
@@ -251,6 +313,7 @@
     const myBtn = document.querySelector('.my_btn');
     const orderList = document.querySelector('.order_list');
     const myList = document.querySelector('.my_list');
+    const cards = document.querySelectorAll('.card');
 
     orderBtn.addEventListener('click', () => {
         if (!orderBtn.classList.contains('border-t-2')) {
@@ -273,5 +336,14 @@
             myList.classList.add('flex');
         }
     });
+
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            console.log(card);
+            console.log('상세보기');
+            window.location.href = '/detail';
+        });
+    });
+
 </script>
 {% endblock %}
