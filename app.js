@@ -1,15 +1,27 @@
 const express = require('express');
 const nunjucks = require('nunjucks');
 const logger = require('morgan');
-
+const cookieParser = require('cookie-parser');
+const expressSession = require('express-session');
 const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(express.static('public'));
+app.use(cookieParser());
+app.use(expressSession({
+    secret: 'asdf1234',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: false,
+        secure: false,
+    },
+    name: "session-cookie",
+}));
 
-app.set('port', 7777);
+app.set('port', 1000);
 
 app.use("/public",express.static('public'));
 

@@ -47,103 +47,12 @@
 {% endblock %}
 {% block script %}
 <script>
-    const $id = document.getElementById('id');
-    const $pw = document.getElementById('pw');
-    const $saveId = document.getElementById('saveId');
-    const $modal = document.getElementById('modal');
-    const $modalMessage = document.getElementById('modalMessage');
-    const $closeModal = document.getElementById('closeModal');
+    document.getElementById('login').addEventListener('click', async function () {
+        const id = document.getElementById('id').value;
+        const pw = document.getElementById('pw').value;
 
-    // 페이지 로드 시 저장된 아이디 불러오기
-    window.addEventListener('load', () => {
-        const savedId = localStorage.getItem('savedId');
-        if (savedId) {
-            $id.value = savedId;
-            $saveId.checked = true;
-        }
-    });
-
-    // 모달 닫기 함수
-    function closeModal() {
-        $modal.classList.add('hidden');
-    }
-
-    // 모달 표시 함수
-    function showModal(message) {
-        $modalMessage.textContent = message;
-        $modal.classList.remove('hidden');
-    }
-
-    // 모달 닫기 이벤트
-    $closeModal.addEventListener('click', closeModal);
-    
-    // 모달 외부 클릭 시 닫기
-    $modal.addEventListener('click', function(e) {
-        if (e.target === $modal) {
-            closeModal();
-        }
-    });
-
-    document.getElementById('login').addEventListener('click', async () => {
-        console.log('로그인 시도:', $id.value);
-        
-        try {
-            const result = await axios.post('http://localhost:7777/login', {
-                id: $id.value,
-                pw: $pw.value,
-            });
-            
-            console.log('서버 응답:', result.data);
-            
-            if (result.data.success) {
-                console.log('로그인 성공! 사용자 데이터:', result.data.userData);
-                
-                // 아이디 저장 처리
-                if ($saveId.checked) {
-                    localStorage.setItem('savedId', $id.value);
-                    console.log('아이디 저장됨:', $id.value);
-                } else {
-                    localStorage.removeItem('savedId');
-                    console.log('아이디 저장 해제됨');
-                }
-                
-                // 로그인 성공 시 sessionStorage에 사용자 정보 저장
-                try {
-                    sessionStorage.setItem('userInfo', JSON.stringify(result.data.userData));
-                    sessionStorage.setItem('isLoggedIn', 'true');
-                    
-                    // 저장 확인
-                    const savedUserInfo = sessionStorage.getItem('userInfo');
-                    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-                    
-                    console.log('세션스토리지 저장 확인:');
-                    console.log('userInfo:', savedUserInfo);
-                    console.log('isLoggedIn:', isLoggedIn);
-                    
-                    showModal(result.data.message);
-                    // 로그인 성공 시 비밀번호 필드만 초기화
-                    $pw.value = '';
-                } catch (storageError) {
-                    console.error('세션스토리지 저장 오류:', storageError);
-                    showModal('로그인은 성공했지만 세션 저장에 실패했습니다.');
-                }
-                window.location.href = '/';
-            } else {
-                console.log('로그인 실패:', result.data.message);
-                showModal(result.data.message);
-            }
-        } catch (error) {
-            console.error('로그인 오류:', error);
-            showModal('서버 연결 오류가 발생했습니다.');
-        }
-    });
-
-    // Enter 키로 로그인
-    $pw.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            document.getElementById('login').click();
-        }
-    });
+        const {data, error} = await axios.post('/login', {id, pw});
+    })
 </script>
 {% endblock %}
 </body>

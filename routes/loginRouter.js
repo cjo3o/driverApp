@@ -10,39 +10,27 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
     console.log(req.body);
-    const { id, pw } = req.body;
-    
+    const {id, pw} = req.body;
+
     try {
-        // DriverList 테이블에서 입력된 아이디와 비밀번호가 일치하는 데이터 조회
-        const { data, error } = await supabase
+        const {data, error} = await supabase
             .from('DriverList')
-            .select('*')
+            .select()
             .eq('driver_id', id)
             .eq('password', pw)
             .single();
-        
-        if (error) {
-            console.log('로그인 실패:', error);
-            return res.json({ success: false, message: '아이디 또는 비밀번호가 틀렸습니다.' });
-        }
-        
+
+        console.log(data);
+
         if (data) {
-            console.log('로그인 성공:', data);
-            const responseData = { 
-                success: true, 
-                message: '로그인되었습니다.',
-                userData: data
-            };
-            console.log('응답 데이터:', responseData);
-            return res.json(responseData);
+            req.session.user = data;
         } else {
-            console.log('일치하는 데이터 없음');
-            return res.json({ success: false, message: '아이디 또는 비밀번호가 틀렸습니다.' });
+            console.log('아이디 또는 비밀번호를 확인해주세요.');
         }
     } catch (error) {
-        console.log('서버 오류:', error);
-        return res.json({ success: false, message: '서버 오류가 발생했습니다.' });
+        console.log(error);
     }
+
 })
 
 module.exports = router;
