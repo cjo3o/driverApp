@@ -8,7 +8,7 @@
         <h1 class="text-[10vw] font-bold text-white">{{user.name}}기사님</h1>
     </div>
     <div class="profile bg-white rounded-full w-[20vw] h-[20vw]">
-
+        <img src="{{user.photo_url}}" alt="profile" class="w-full h-full object-cover rounded-full">
     </div>
 </div>
 <div class="date text-[5vw] px-[4vw]">
@@ -23,10 +23,14 @@
     </div>
 </div>
 <div class="order_list px-[4vw] py-[2vh] h-full max-h-[47vh] mt-[1.5vw] flex flex-col gap-[3vw] overflow-y-auto">
+    {% for item in resData %}
     <div class="card p-[1vw] bg-white rounded-[3.5vw]">
         <div class="card_head pb-[1vw] flex justify-between border-b-2 border-dotted border-[#cccccc]">
             <p class="px-[2vw] text-[4vw] text-[#ABABAB]">
                 ORDER
+            </p>
+            <p class="order_number hidden text-[#ABABAB]">
+                {{item.re_num}}
             </p>
         </div>
         <div class="card_body px-[2vw] pt-[3vw] text-black text-[4vw]">
@@ -35,12 +39,12 @@
                     <p class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
                         F
                     </p>
-                    <p>
-                        경주역
+                    <p class="from_name">
+                        {{item.delivery_start}}
                     </p>
                 </div>
                 <div class="from_body ml-[9vw]">
-                    2020-01-01 / 12:00
+                    {{item.delivery_date}}
                 </div>
             </div>
             <div class="to">
@@ -48,160 +52,17 @@
                     <p class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
                         T
                     </p>
-                    <p>
-                        경주역
+                    <p class="to_name">
+                        {{item.delivery_arrive}}
                     </p>
                 </div>
                 <div class="to_body ml-[9vw]">
-                    2020-01-01 / 12:00
-                </div>
-            </div>
-
-        </div>
-    </div>
-    <div class="card p-[1vw] bg-white rounded-[3.5vw]">
-        <div class="card_head pb-[1vw] flex justify-between border-b-2 border-dotted border-[#cccccc]">
-            <p class="px-[2vw] text-[4vw] text-[#ABABAB]">
-                ORDER
-            </p>
-        </div>
-        <div class="card_body px-[2vw] pt-[3vw] text-black text-[4vw]">
-            <div class="from">
-                <div class="from_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        F
-                    </p>
-                    <p>
-                        경주역
-                    </p>
-                </div>
-                <div class="from_body ml-[9vw]">
-                    2020-01-01 / 12:00
-                </div>
-            </div>
-            <div class="to">
-                <div class="to_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        T
-                    </p>
-                    <p>
-                        경주역
-                    </p>
-                </div>
-                <div class="to_body ml-[9vw]">
-                    2020-01-01 / 12:00
-                </div>
-            </div>
-
-        </div>
-    </div>
-    <div class="card p-[1vw] bg-white rounded-[3.5vw]">
-        <div class="card_head pb-[1vw] flex justify-between border-b-2 border-dotted border-[#cccccc]">
-            <p class="px-[2vw] text-[4vw] text-[#ABABAB]">
-                ORDER
-            </p>
-        </div>
-        <div class="card_body px-[2vw] pt-[3vw] text-black text-[4vw]">
-            <div class="from">
-                <div class="from_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        F
-                    </p>
-                    <p>
-                        경주역
-                    </p>
-                </div>
-                <div class="from_body ml-[9vw]">
-                    2020-01-01 / 12:00
-                </div>
-            </div>
-            <div class="to">
-                <div class="to_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        T
-                    </p>
-                    <p>
-                        경주역
-                    </p>
-                </div>
-                <div class="to_body ml-[9vw]">
-                    2020-01-01 / 12:00
+                    도착시간 없음..
                 </div>
             </div>
         </div>
     </div>
-    <div class="card p-[1vw] bg-white rounded-[3.5vw]">
-        <div class="card_head pb-[1vw] flex justify-between border-b-2 border-dotted border-[#cccccc]">
-            <p class="px-[2vw] text-[4vw] text-[#ABABAB]">
-                ORDER
-            </p>
-        </div>
-        <div class="card_body px-[2vw] pt-[3vw] text-black text-[4vw]">
-            <div class="from">
-                <div class="from_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        F
-                    </p>
-                    <p>
-                        경주역
-                    </p>
-                </div>
-                <div class="from_body ml-[9vw]">
-                    2020-01-01 / 12:00
-                </div>
-            </div>
-            <div class="to">
-                <div class="to_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        T
-                    </p>
-                    <p>
-                        경주역
-                    </p>
-                </div>
-                <div class="to_body ml-[9vw]">
-                    2020-01-01 / 12:00
-                </div>
-            </div>
-
-        </div>
-    </div>
-    <div class="card p-[1vw] bg-white rounded-[3.5vw]">
-        <div class="card_head pb-[1vw] flex justify-between border-b-2 border-dotted border-[#cccccc]">
-            <p class="px-[2vw] text-[4vw] text-[#ABABAB]">
-                ORDER
-            </p>
-        </div>
-        <div class="card_body px-[2vw] pt-[3vw] text-black text-[4vw]">
-            <div class="from">
-                <div class="from_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        F
-                    </p>
-                    <p>
-                        경주역
-                    </p>
-                </div>
-                <div class="from_body ml-[9vw]">
-                    2020-01-01 / 12:00
-                </div>
-            </div>
-            <div class="to">
-                <div class="to_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        T
-                    </p>
-                    <p>
-                        경주역
-                    </p>
-                </div>
-                <div class="to_body ml-[9vw]">
-                    2020-01-01 / 12:00
-                </div>
-            </div>
-
-        </div>
-    </div>
+    {% endfor %}
 </div>
 <div class="my_list p-[4vw] h-full max-h-[47vh] mt-[1.5vw] hidden flex-col gap-[3vw] overflow-y-auto">
     <p class="text-[4vw]">
@@ -338,10 +199,13 @@
     });
 
     cards.forEach(card => {
-        card.addEventListener('click', () => {
-            console.log(card);
+        card.addEventListener('click', async () => {
+            const res_num = card.querySelector('.order_number').textContent.trim();
+            console.log('res_num:',res_num);
             console.log('상세보기');
-            window.location.href = '/detail';
+            
+            // 쿼리 파라미터로 res_num을 전달하여 detail 페이지로 이동
+            window.location.href = `/detail?re_num=${res_num}`;
         });
     });
 

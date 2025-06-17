@@ -2,21 +2,47 @@
 {% block style %}
 {% endblock %}
 {% block content %}
+<!-- JavaScript에서 사용할 데이터를 숨겨서 저장 -->
+{% if deliveryData %}
+<script>
+    window.deliveryData = {
+        re_num: '{{deliveryData.re_num}}',
+        delivery_start: '{{deliveryData.delivery_start}}',
+        delivery_arrive: '{{deliveryData.delivery_arrive}}',
+        delivery_date: '{{deliveryData.delivery_date}}',
+        situation: '{{deliveryData.situation}}',
+        name: '{{deliveryData.name}}',
+        phone: '{{deliveryData.phone}}',
+        price: '{{deliveryData.price.toLocaleString()}}',
+        under: Number('{{deliveryData.under}}'),
+        over: Number('{{deliveryData.over}}')
+    };
+    window.user = {
+        id: '{{user.id}}',
+        name: '{{user.name}}',
+        email: '{{user.email}}',
+        photo_url: '{{user.photo_url}}'
+    };
+</script>
+{% endif %}
+
 <div class="flex flex-col h-screen items-center bg-[#393c48] py-[5vh] overflow-y-auto">
     <!-- 상단 카드 -->
     <div class="bg-white rounded-[4vw] shadow-lg w-[90vw] p-[5vw] mb-[4vh]">
         <div class="flex items-center pb-[1vh] border-b border-dashed border-[#cccccc]">
-            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#BAC0C8] text-white font-bold mr-3">F</div>
+            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#BAC0C8] text-white font-bold mr-3">F
+            </div>
             <div>
-                <div class="font-semibold text-gray-800 text-[5vw]">Incheon Airport</div>
-                <div class="text-[3.8vw] text-gray-400">2019.12.12  05:00am</div>
+                <div class="font-semibold text-gray-800 text-[5vw]">{{deliveryData.delivery_start}}</div>
+                <div class="text-[3.8vw] text-gray-400">{{deliveryData.delivery_date}}</div>
             </div>
         </div>
         <div class="flex items-center pt-[1vh]">
-            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#2565CB] text-white font-bold mr-3">T</div>
+            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#2565CB] text-white font-bold mr-3">T
+            </div>
             <div>
-                <div class="font-semibold text-gray-800 text-[5vw]">Shilla Stay</div>
-                <div class="text-[3.8vw] text-gray-400">2019.12.12  06:00am</div>
+                <div class="font-semibold text-gray-800 text-[5vw]">{{deliveryData.delivery_arrive}}</div>
+                <div class="text-[3.8vw] text-gray-400">도착시간 없음..</div>
             </div>
         </div>
     </div>
@@ -24,20 +50,46 @@
     <div class="bg-white rounded-[4vw] shadow w-[90vw] p-[5vw] flex flex-col items-center">
         <div class="w-full flex justify-between items-center border-b border-dashed border-[#cccccc] pb-[2vw] mb-[2vw]">
             <span class="font-bold text-[3.8vw] text-gray-500">예약 번호</span>
-            <span class="font-bold text-[4vw] text-black tracking-wider">ABC123456789</span>
+            <span class="font-bold text-[4vw] text-black tracking-wider">{{deliveryData.re_num.split('-')[0]}}···</span>
         </div>
         <div class="w-full flex flex-col gap-2 text-center text-[4.5vw] text-gray-700">
-            <div class="flex justify-between w-full"><span>이름</span><span>홍길동</span></div>
-            <div class="flex justify-between w-full"><span>전화번호</span><span>010-0000-0000</span></div>
-            <div class="flex justify-between w-full"><span>요금</span><span>10,000원</span></div>
-            <div class="flex justify-between w-full"><span>짐</span><span>1개 L</span></div>
-            <div class="flex justify-between w-full"><span>짐</span><span>1개 L</span></div>
-            <div class="flex justify-between w-full"><span>짐</span><span>1개 L</span></div>
+            <div class="flex justify-between w-full"><span>이름</span><span>{{deliveryData.name}}</span></div>
+            <div class="flex justify-between w-full"><span>전화번호</span><span>{{deliveryData.phone}}</span></div>
+            <div class="flex justify-between w-full">
+                <span>요금</span><span>{{deliveryData.price.toLocaleString()}}원</span>
+            </div>
+            <div class="flex justify-between w-full"><span>짐</span>
+                <div class="flex flex-col"><span>26"이하 : {{deliveryData.under}}</span><span>26"초과 :
+                        {{deliveryData.over}}</span></div>
+            </div>
         </div>
     </div>
     <!-- 하단 버튼 -->
-    <button class="mt-[6vw] w-[90vw] py-4 bg-[#A259FF] text-white font-bold text-[6vw] rounded-[4vw] shadow-md hover:bg-[#8b3dff] transition">배송 접수</button>
+    <button
+        class="submit mt-[6vw] w-[90vw] py-4 bg-[#A259FF] text-white font-bold text-[6vw] rounded-[4vw] shadow-md hover:bg-[#8b3dff] transition">배송
+        접수</button>
 </div>
 {% endblock %}
 {% block script %}
+<script>
+    // 전역 변수로 선언된 deliveryData 사용
+    console.log('JavaScript에서 사용할 수 있는 deliveryData:', window.deliveryData);
+
+    const submitBtn = document.querySelector('.submit');
+
+    if (window.deliveryData.situation === '접수') {
+        submitBtn.innerHTML = '배송 접수';
+        submitBtn.addEventListener('click', async () => {
+            alert('마이 리스트에 추가되었습니다.');
+            const result = await axios.post('/detail', {
+                re_num: window.deliveryData.re_num
+                driver_id: 
+            });
+        });
+    } else if (window.deliveryData.situation === '배송대기') {
+        submitBtn.innerHTML = '배송 시작';
+    } else if (window.deliveryData.situation === '배송중') {
+        submitBtn.innerHTML = '배송 완료';
+    }
+</script>
 {% endblock %}
