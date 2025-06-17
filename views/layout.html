@@ -1,51 +1,58 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <title>{{title}}</title>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     {% block style %}
     {% endblock %}
 </head>
-<body class="m-0 p-0 bg-gray-800 text-white">
-<div class="flex justify-between items-center p-3 border-b border-white">
-    <button class="bg-transparent border-none cursor-pointer" type="button" onclick="back()">
-        <img src="../public/icons/backward.png" alt="back" class="w-6 h-6">
-    </button>
-    <a class="flex-grow text-center text-xl font-bold text-white no-underline" href="/">WITH GO</a>
-    <button class="bg-transparent border-none cursor-pointer" type="button" onclick="logout()">
-        <img src="../public/icons/logout.png" alt="logout" class="w-6 h-6">
-    </button>
-</div>
-{% block content %}
-{% endblock %}
-<div class="fixed bg-gray-800 bottom-0 w-full p-2 flex justify-around items-center text-center border-t border-white">
-    <a class="text-white no-underline" href="/bell">
-        <img src="../public/icons/bell.png" alt="bell" class="w-5 h-5 mx-auto">
-        <p class="m-0 text-white text-xs">알림</p>
-    </a>
-    <a class="text-white no-underline" href="/">
-        <img src="../public/icons/home.png" alt="home" class="w-5 h-5 mx-auto">
-        <p class="m-0 text-white text-xs">홈</p>
-    </a>
-    <a class="text-white no-underline" href="/money">
-        <img src="../public/icons/money.png" alt="money" class="w-5 h-5 mx-auto">
-        <p class="m-0 text-white text-xs">정산</p>
-    </a>
-</div>
 
-<script>
-    function logout() {
-        localStorage.removeItem('token');
-        window.location.href = '/login'; // 실제 경로에 맞게
-    }
-</script>
-{% block script %}
-{% endblock %}
+<body class="m-0 p-0 bg-gray-800 text-white">
+    <div class="flex justify-between items-center p-3 border-b border-white">
+        <button class="bg-transparent border-none cursor-pointer" type="button" onclick="back()">
+            <img src="/public/icons/backward.png" alt="back" class="w-6 h-6">
+        </button>
+        <a class="flex-grow text-center text-xl font-bold text-white no-underline" href="/">WITH GO</a>
+        <button class="bg-transparent border-none cursor-pointer" type="button" onclick="logout()">
+            <img src="/public/icons/logout.png" alt="logout" class="w-6 h-6">
+        </button>
+    </div>
+    {% block content %}
+    {% endblock %}
+    <div
+        class="fixed bg-gray-800 bottom-0 w-full p-2 flex justify-around items-center text-center border-t border-white">
+        <a class="text-white no-underline" href="/bell">
+            <img src="/public/icons/bell.png" alt="bell" class="w-5 h-5 mx-auto">
+            <p class="m-0 text-white text-xs">알림</p>
+        </a>
+        <a class="text-white no-underline" href="/">
+            <img src="/public/icons/home.png" alt="home" class="w-5 h-5 mx-auto">
+            <p class="m-0 text-white text-xs">홈</p>
+        </a>
+        <a class="text-white no-underline" href="/money">
+            <img src="/public/icons/money.png" alt="money" class="w-5 h-5 mx-auto">
+            <p class="m-0 text-white text-xs">정산</p>
+        </a>
+    </div>
+
+    <script>
+        function back() {
+            window.history.back();
+        }
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '/login'; // 실제 경로에 맞게
+        }
+    </script>
+    {% block script %}
+    {% endblock %}
 
 </body>
+
 </html>

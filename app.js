@@ -3,11 +3,13 @@ const nunjucks = require('nunjucks');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
+const path = require('path');
+
 const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
 app.use(cookieParser());
 app.use(expressSession({
@@ -22,15 +24,15 @@ app.use(expressSession({
 }));
 
 app.set('port', 7777);
-
-app.use("/public",express.static('public'));
-
-nunjucks.configure("views",{
-    express:app,
-    watch:true,
-});
-
 app.set('view engine', 'html');
+app.set('views', path.join(__dirname, 'views'));
+
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
+nunjucks.configure('views', {
+    express: app,
+    watch: true,
+});
 
 const mainRouter = require('./routes/mainRouter.js');
 const loginRouter = require('./routes/loginRouter.js');

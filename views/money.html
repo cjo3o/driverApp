@@ -2,43 +2,34 @@
 {% block style %}
 {% endblock %}
 {% block content %}
-
 <div class="container">
-    <!-- Top -->
-    <div class="name-top px-[7vw] py-[2vw] mt-[15vw]">
-        <div class="flex justify-end">
-            <!-- bold 기사 이름 -->
-            <h1 class="text-[7vw] text-right"> 기사님의</h1>
-        </div>
-        <h1 class="text-[7vw] text-right">정산 금액은</h1>
-        <div class="flex justify-end">
-            <!-- bold 정산 금액 -->
-            <h1 class="text-[7vw] text-right">원 입니다.</h1>
-        </div>
+    <!-- title -->
+    <div class="title text-end px-[7vw] py-[2vw]">
+            <h1 class="text-[7vw] text-right">{{driverName | default('ㅇㅇㅇ')}}기사님의</h1>
+            <h1 class="text-[7vw] text-right">정산 금액은</h1>
+            <h1 class="text-[7vw] text-right">{{totalAmount | default(0)}}원 입니다.</h1>
     </div>
     <!-- Middle -->
-    <div class="name-middle absolute left-1/2 -translate-x-1/2 top-[50vw] px-[8vw] py-[2vw]
+    <div class="middle absolute left-1/2 -translate-x-1/2 top-[50vw] px-[8vw] py-[2vw]
     flex justify-around bg-white rounded-xl shadow-lg w-[85vw] min-h-[16vw] items-center">
         <button class="bg-transparent border-none cursor-pointer" type="button" onclick="prev()">
-            <img src="../public/icons/prev.png" alt="prev" class="w-[7vw] h-[7vw]">
+            <img src="/public/icons/prev.png" alt="prev" class="w-[7vw] h-[7vw]">
         </button>
-        <div class="name-totaldata">
+        <div class="totaldata">
             <div class="flex justify-center">
-                <!-- bold 월 -->
-                <p class="text-[7vw] text-bold text-black text-center">월</p>
+                <p class="text-[7vw] font-bold text-black text-center">{{selectedMonth}}월</p>
             </div>
             <div class="flex justify-between">
-                <p class="text-[7vw] text-bold text-black text-center">TOTAL</p>
-                <!-- bold purple 월별 토탈 건수 -->
+                <p class="text-[7vw] font-bold text-black text-center">TOTAL <span class="text-purple-600">{{totalCount | default(0)}}</span></p>
             </div>
         </div>
         <button class="bg-transparent border-none cursor-pointer" type="button" onclick="next()">
-            <img src="../public/icons/next.png" alt="next" class="w-[7vw] h-[7vw]">
+            <img src="/public/icons/next.png" alt="next" class="w-[7vw] h-[7vw]">
         </button>
     </div>
 
     <!-- list -->
-    <div class=" bg-white mt-[15vw] overflow-y-auto pb-[100vw] mb-[10vw]">
+    <div class=" bg-white mt-[15vw] pb-[100vw] mb-[10vw]">
         <div class="flex justify-between mt-[15vw] text-black text-[4vw] px-[10vw] py-[2vw] border-b-[0.5vw] border-dotted border-black">
             <p>날짜</p>
             <div class="flex justify-end gap-[7vw]">
@@ -46,12 +37,52 @@
                 <p>상세</p>
             </div>
         </div>
-        <div class="text-[4vw] text-black px-[10vw]">
-              <!-- list -->
+
+        <!-- List Content -->
+        <div class="overflow-y-auto max-h-[47vh] px-[10vw] flex flex-col gap-[2.5vw] mt-[2vw]">
+            {% if dailyCount and dailyCount|length > 0 %}
+                {% for date, count in dailyCount.items() %}
+            <div class="flex justify-between items-center text-[4vw] text-black">
+                <p>{{ date }}</p>
+                <div class="flex gap-[7vw] items-center">
+                    <p>{{ count }}</p>
+                    <a href="/money/detail?date={{ date }}">
+                        <img src="/public/icons/bluearrow.png" alt="상세" class="w-[4vw] h-[4vw]" />
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="text-center text-[4vw] text-gray-500 mt-[4vw]">이 달의 배송 데이터가 없습니다.</p>
+        {% endif %}
         </div>
     </div>
 </div>
-
 {% endblock %}
+
 {% block script %}
+<script>
+    const currentMonth = Number("{{ selectedMonth }}");
+    const currentYear = Number("{{ selectedYear }}");
+
+    function prev() {
+        let newMonth = currentMonth - 1;
+        let newYear = currentYear;
+        if (newMonth < 1) {
+            newMonth = 12;
+            newYear -= 1;
+        }
+        window.location.href = `/money?month=${newMonth}&year=${newYear}`;
+    }
+
+    function next() {
+        let newMonth = currentMonth + 1;
+        let newYear = currentYear;
+        if (newMonth > 12) {
+            newMonth = 1;
+            newYear += 1;
+        }
+        window.location.href = `/money?month=${newMonth}&year=${newYear}`;
+    }
+</script>
 {% endblock %}
