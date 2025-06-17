@@ -24,10 +24,6 @@
             <input id="pw" type="password"
                    class="border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent px-3 py-2 border rounded-md w-full min-w-[120px] text-sm">
         </div>
-        <div class="mt-2 flex items-center gap-2">
-            <input type="checkbox" id="saveId" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
-            <label for="saveId" class="font-bold text-[11px] text-gray-700 cursor-pointer">아이디 저장</label>
-        </div>
         <button class="mt-5 font-bold text-[11px] text-white bg-[#667FFF] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full min-w-[120px] py-2 rounded-md transition-colors duration-200"
                 id="login">
             로그인
@@ -36,7 +32,7 @@
 </div>
 
 <!-- 모달 -->
-<div id="modal" class="hidden fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
+<div id="modal" class="hidden fixed inset-0 z-50 overflow-auto bg-gray-100 bg-opacity-30 flex items-center justify-center">
     <div class="bg-white rounded-lg shadow-xl p-6 w-80 max-w-sm mx-4">
         <h3 id="modalMessage" class="font-bold text-lg mb-4 text-gray-800 text-center"></h3>
         <div class="flex justify-center">
@@ -47,101 +43,65 @@
 {% endblock %}
 {% block script %}
 <script>
-    const $id = document.getElementById('id');
-    const $pw = document.getElementById('pw');
-    const $saveId = document.getElementById('saveId');
-    const $modal = document.getElementById('modal');
-    const $modalMessage = document.getElementById('modalMessage');
-    const $closeModal = document.getElementById('closeModal');
+    // 로그인 함수
+    async function performLogin() {
+        const id = document.getElementById('id').value;
+        const pw = document.getElementById('pw').value;
 
-    // 페이지 로드 시 저장된 아이디 불러오기
-    window.addEventListener('load', () => {
-        const savedId = localStorage.getItem('savedId');
-        if (savedId) {
-            $id.value = savedId;
-            $saveId.checked = true;
-        }
-    });
-
-    // 모달 닫기 함수
-    function closeModal() {
-        $modal.classList.add('hidden');
-    }
-
-    // 모달 표시 함수
-    function showModal(message) {
-        $modalMessage.textContent = message;
-        $modal.classList.remove('hidden');
-    }
-
-    // 모달 닫기 이벤트
-    $closeModal.addEventListener('click', closeModal);
-    
-    // 모달 외부 클릭 시 닫기
-    $modal.addEventListener('click', function(e) {
-        if (e.target === $modal) {
-            closeModal();
-        }
-    });
-
-    document.getElementById('login').addEventListener('click', async () => {
-        console.log('로그인 시도:', $id.value);
-        
         try {
-            const result = await axios.post('http://localhost:7777/login', {
-                id: $id.value,
-                pw: $pw.value,
-            });
+            const response = await axios.post('/login', {id, pw});
             
-            console.log('서버 응답:', result.data);
-            
-            if (result.data.success) {
-                console.log('로그인 성공! 사용자 데이터:', result.data.userData);
-                
-                // 아이디 저장 처리
-                if ($saveId.checked) {
-                    localStorage.setItem('savedId', $id.value);
-                    console.log('아이디 저장됨:', $id.value);
-                } else {
-                    localStorage.removeItem('savedId');
-                    console.log('아이디 저장 해제됨');
-                }
-                
-                // 로그인 성공 시 sessionStorage에 사용자 정보 저장
-                try {
-                    sessionStorage.setItem('userInfo', JSON.stringify(result.data.userData));
-                    sessionStorage.setItem('isLoggedIn', 'true');
-                    
-                    // 저장 확인
-                    const savedUserInfo = sessionStorage.getItem('userInfo');
-                    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-                    
-                    console.log('세션스토리지 저장 확인:');
-                    console.log('userInfo:', savedUserInfo);
-                    console.log('isLoggedIn:', isLoggedIn);
-                    
-                    showModal(result.data.message);
-                    // 로그인 성공 시 비밀번호 필드만 초기화
-                    $pw.value = '';
-                } catch (storageError) {
-                    console.error('세션스토리지 저장 오류:', storageError);
-                    showModal('로그인은 성공했지만 세션 저장에 실패했습니다.');
-                }
+            // 로그인 성공 시 메인 페이지로 이동
+            if (response.status === 200) {
                 window.location.href = '/';
-            } else {
-                console.log('로그인 실패:', result.data.message);
-                showModal(result.data.message);
             }
         } catch (error) {
-            console.error('로그인 오류:', error);
-            showModal('서버 연결 오류가 발생했습니다.');
+            // 로그인 실패 시 모달 표시
+            const modal = document.getElementById('modal');
+            const modalMessage = document.getElementById('modalMessage');
+            
+            if (error.response && error.response.data && error.response.data.error) {
+                modalMessage.textContent = error.response.data.error;
+            } else {
+                modalMessage.textContent = '로그인 중 오류가 발생했습니다.';
+            }
+            
+            modal.classList.remove('hidden');
+        }
+    }
+
+    // 로그인 버튼 클릭 이벤트
+    document.getElementById('login').addEventListener('click', performLogin);
+
+    // 엔터 키 이벤트 (아이디, 비밀번호 입력 필드에서)
+    document.getElementById('id').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            performLogin();
         }
     });
 
-    // Enter 키로 로그인
-    $pw.addEventListener('keypress', function(e) {
+    document.getElementById('pw').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
-            document.getElementById('login').click();
+            performLogin();
+        }
+    });
+
+    // 모달 닫기 버튼 이벤트
+    document.getElementById('closeModal').addEventListener('click', function() {
+        document.getElementById('modal').classList.add('hidden');
+    });
+
+    // 모달 외부 클릭 시 닫기
+    document.getElementById('modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.add('hidden');
+        }
+    });
+
+    // 모달에서 엔터 키 누르면 닫기
+    document.getElementById('modal').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            this.classList.add('hidden');
         }
     });
 </script>
