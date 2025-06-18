@@ -6,12 +6,12 @@ const moment = require('moment');
 router.get('/', async (req, res) => {
     const user = req.session.user;
 
-    if (!user || !user.driver_id) {
+    if (!user || !user.id) {
         console.error('🚫 세션에 로그인 정보 없음');
         return res.status(401).send('로그인이 필요합니다.');
     }
 
-    const driverId = user.driver_id;
+    const driverId = user.id;
     const selectedYear = String(req.query.year || moment().format('YYYY'));
     const selectedMonth = String(req.query.month || moment().format('MM')).padStart(2, '0');
     const selectedYM = `${selectedYear}.${selectedMonth}`;
@@ -23,40 +23,61 @@ router.get('/', async (req, res) => {
         .eq('driver_id', driverId)
         .not('f_time', 'is', null);
 
-    if (error || !data) {
+    if (error || !Array.isArray(data)) {
         console.error('❗ 배송 데이터 조회 오류:', error);
         return res.status(500).send('배송 데이터를 불러올 수 없습니다.');
     }
 
-    // 정산 계산 및 일/월별 집계
     const dailyCount = {};
-    const monthlyCount = {};
-    let totalAmount = 0;
+    const dailyAmount = {};
 
     data.forEach(row => {
         const date = moment(row.f_time);
         const monthKey = date.format('YYYY.MM');
         const dayKey = date.format('YYYY.MM.DD');
 
-        monthlyCount[monthKey] = (monthlyCount[monthKey] || 0) + 1;
-
         if (monthKey === selectedYM) {
+            // 일별 건수
             dailyCount[dayKey] = (dailyCount[dayKey] || 0) + 1;
-            totalAmount += (row.price || 0) * 0.5;
+
+            // 일별 금액
+            const amount = (row.price || 0) * 0.5;
+            dailyAmount[dayKey] = (dailyAmount[dayKey] || 0) + amount;
         }
     });
 
-    const totalCount = monthlyCount[selectedYM] || 0;
+    // 월별 총합 계산
+    let totalCount = Object.values(dailyCount).reduce((sum, v) => sum + v, 0);
+    let totalAmount = Object.values(dailyAmount).reduce((sum, v) => sum + v, 0);
 
+    function formatNumber(num) {
+        return Number(num || 0).toLocaleString('ko-KR');
+    }
+
+    Object.keys(dailyAmount).forEach(date => {
+        dailyAmount[date] = formatNumber(dailyAmount[date]);
+    });
+
+    totalAmount = formatNumber(totalAmount);
+    totalCount = formatNumber(totalCount);
+
+    const dailyList = Object.keys(dailyCount).map(date => ({
+        date,
+        count: dailyCount[date],
+        amount: dailyAmount[date]
+    }));
+    
+    // 렌더링
     res.render('money.html', {
         title: '정산페이지',
-        user, // user.name, user.driver_id 사용 가능
-        totalAmount,
+        user,
+        dailyList,
         totalCount,
-        dailyCount,
+        totalAmount,
         selectedYear,
         selectedMonth
     });
 });
+
 
 module.exports = router;

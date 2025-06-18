@@ -5,8 +5,8 @@
 <div class="container">
     <!-- title -->
     <div class="title text-end px-[7vw] py-[2vw]">
-            <h1 class="text-[7vw] text-right">{{user.name}}기사님의</h1>
-            <h1 class="text-[7vw] text-right">정산 금액은</h1>
+            <h1 class="text-[7vw] text-right">{{user.name}} 기사님의</h1>
+            <h1 class="text-[7vw] text-right">이달의 총 정산금액은</h1>
             <h1 class="text-[7vw] text-right">{{totalAmount | default(0)}}원 입니다.</h1>
     </div>
     <!-- Middle -->
@@ -33,29 +33,31 @@
         <div class="flex justify-between mt-[15vw] text-black text-[4vw] px-[10vw] py-[2vw] border-b-[0.5vw] border-dotted border-black">
             <p>날짜</p>
             <div class="flex justify-end gap-[7vw]">
-                <p>건수</p>
+               <p>건수</p>
+               <p>금액</p>
                 <p>상세</p>
             </div>
         </div>
 
         <!-- List Content -->
         <div class="overflow-y-auto max-h-[47vh] px-[10vw] flex flex-col gap-[2.5vw] mt-[2vw]">
-            {% if dailyCount and dailyCount|length > 0 %}
-            {% for date, count in dailyCount.items() %}
+            {% if dailyList and dailyList | length > 0 %}
+            {% for day in dailyList %}
             <div class="flex justify-between items-center text-[4vw] text-black">
-                <p>{{ date }}</p>
-                <div class="flex gap-[7vw] items-center">
-                    <p>{{ count }}</p>
-                    <a href="/money/detail?date={{ date }}">
-                        <img src="/public/icons/bluearrow.png" alt="상세" class="w-[4vw] h-[4vw]" />
-                    </a>
-                </div>
+              <p>{{ day.date }}</p>
+              <div class="flex gap-[7vw] items-center">
+                <p>{{ day.count }}</p>
+                <p>{{ day.amount | default(0) }}</p>
+                <a href="/money/detail?date={{ day.date }}">
+                  <img src="/public/icons/bluearrow.png" alt="상세" class="w-[4vw] h-[4vw]" />
+                </a>
+              </div>
             </div>
-            {% endfor %}
-            {% else %}
-            <p class="text-center text-[4vw] text-gray-500 mt-[4vw]">
-                이 달의 배송 데이터가 없습니다.
-            </p>
+          {% endfor %}
+                      {% else %}
+                <p class="text-center text-[4vw] text-gray-500 mt-[4vw]">
+                    이 달의 배송 데이터가 없습니다.
+                </p>
             {% endif %}
         </div>
     </div>
