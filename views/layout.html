@@ -40,7 +40,15 @@
 
 <script>
     function back() {
-        window.history.back();
+        // 로그인 후 메인 페이지에서 뒤로가기를 막기 위해
+        // 현재 페이지가 메인 페이지이고, 이전 페이지가 로그인 페이지인 경우 홈으로 이동
+        if (window.location.pathname === '/' || window.location.pathname === '/main') {
+            // 메인 페이지에서는 뒤로가기를 막고 홈에 머무름
+            return;
+        } else {
+            // 다른 페이지에서는 이전 페이지로 이동
+            window.history.back();
+        }
     }
     
     function logout() {
