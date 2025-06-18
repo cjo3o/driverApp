@@ -21,6 +21,7 @@
         id: '{{user.id}}',
         name: '{{user.name}}',
         email: '{{user.email}}',
+        phone: '{{user.phone}}',
         photo_url: '{{user.photo_url}}'
     };
 </script>
@@ -62,12 +63,20 @@
                 <div class="flex flex-col"><span>26"이하 : {{deliveryData.under}}</span><span>26"초과 :
                         {{deliveryData.over}}</span></div>
             </div>
+            {% if deliveryData.situation !== '접수' %}
+            <div class="flex justify-between w-full"><span>배송시작</span><span>{{s_time}}</span></div>
+            <div class="flex justify-between w-full"><span>배송완료</span><span>{{f_time}}</span></div>
+            {% endif %}
         </div>
     </div>
     <!-- 하단 버튼 -->
     <button
         class="submit mt-[6vw] w-[90vw] py-4 bg-[#A259FF] text-white font-bold text-[6vw] rounded-[4vw] shadow-md hover:bg-[#8b3dff] transition">배송
-        접수</button>
+        접수
+    </button>
+</div>
+<div class="h-[5vh]">
+
 </div>
 {% endblock %}
 {% block script %}
@@ -77,19 +86,64 @@
 
     const submitBtn = document.querySelector('.submit');
 
+    function getKSTISOString() {
+        const now = new Date();
+        const offset = 9 * 60 * 60 * 1000;
+        const kst = new Date(now.getTime() + offset);
+        return kst.toISOString().replace('Z', '+09:00');
+    }
+
     if (window.deliveryData.situation === '접수') {
         submitBtn.innerHTML = '배송 접수';
         submitBtn.addEventListener('click', async () => {
             alert('마이 리스트에 추가되었습니다.');
             const result = await axios.post('/detail', {
-                re_num: window.deliveryData.re_num
-                driver_id: 
+                re_num: window.deliveryData.re_num,
+                driver_id: window.user.id,
+                status: window.deliveryData.situation,
+                driver_name: window.user.name,
+                driver_phone: window.user.phone,
             });
+            if (result.data.redirectTo) {
+                window.location.href = result.data.redirectTo;
+            }
         });
     } else if (window.deliveryData.situation === '배송대기') {
         submitBtn.innerHTML = '배송 시작';
+        submitBtn.addEventListener('click', async () => {
+            alert('배송이 시작되었습니다.');
+            const result = await axios.post('/detail', {
+                re_num: window.deliveryData.re_num,
+                driver_id: window.user.id,
+                status: window.deliveryData.situation,
+                driver_name: window.user.name,
+                driver_phone: window.user.phone,
+                start_time: getKSTISOString(),
+            });
+            if (result.data.redirectTo) {
+                window.location.href = result.data.redirectTo;
+            }
+        });
     } else if (window.deliveryData.situation === '배송중') {
         submitBtn.innerHTML = '배송 완료';
+        submitBtn.addEventListener('click', async () => {
+            alert('배송이 완료되었습니다.');
+            const result = await axios.post('/detail', {
+                re_num: window.deliveryData.re_num,
+                driver_id: window.user.id,
+                status: window.deliveryData.situation,
+                driver_name: window.user.name,
+                driver_phone: window.user.phone,
+                finish_time: getKSTISOString(),
+            });
+            if (result.data.redirectTo) {
+                window.location.href = result.data.redirectTo;
+            }
+        });
+    } else if (window.deliveryData.situation === '배송완료') {
+        submitBtn.innerHTML = '배송 완료';
+        submitBtn.classList.add('bg-gray-400');
+        submitBtn.classList.remove('hover:bg-[#8b3dff]');
     }
 </script>
 {% endblock %}

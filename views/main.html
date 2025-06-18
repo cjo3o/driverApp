@@ -57,7 +57,7 @@
                     </p>
                 </div>
                 <div class="to_body ml-[9vw]">
-                    도착시간 없음..
+                    -
                 </div>
             </div>
         </div>
@@ -68,7 +68,12 @@
     <p class="text-[4vw]">
         배송대기
     </p>
+    {% if myList_waiting.length > 0 %}
+    {% for item in myList_waiting %}
     <div class="card p-[1vw] bg-white rounded-[3.5vw]">
+        <p class="order_number hidden text-[#ABABAB]">
+            {{item.re_num}}
+        </p>
         <div class="card_body p-[2vw] text-black text-[4vw]">
             <div class="from">
                 <div class="from_head flex items-center gap-[2vw]">
@@ -76,11 +81,11 @@
                         F
                     </p>
                     <p>
-                        경주역
+                        {{item.delivery_start}}
                     </p>
                 </div>
                 <div class="from_body ml-[9vw]">
-                    2020-01-01 / 12:00
+                    {{item.delivery_date}}
                 </div>
             </div>
             <div class="to">
@@ -89,20 +94,31 @@
                         T
                     </p>
                     <p>
-                        경주역
+                        {{item.delivery_arrive}}
                     </p>
                 </div>
                 <div class="to_body ml-[9vw]">
-                    2020-01-01 / 12:00
+                    -
                 </div>
             </div>
-
         </div>
     </div>
+    {% endfor %}
+    {% else %}
+    <div class="flex flex-col items-center justify-center py-[8vh] px-[4vw]">
+        <p class="text-[4.5vw] text-gray-400 font-medium">배송 대기 중인 주문이 없습니다</p>
+        <p class="text-[3.5vw] text-gray-300 mt-[2vw]">새로운 주문을 확인해보세요</p>
+    </div>
+    {% endif %}
     <p class="text-[4vw]">
         배송중
     </p>
+    {% if myList_delivering.length > 0 %}
+    {% for item in myList_delivering %}
     <div class="card p-[1vw] bg-white rounded-[3.5vw]">
+        <p class="order_number hidden text-[#ABABAB]">
+            {{item.re_num}}
+        </p>
         <div class="card_body p-[2vw] text-black text-[4vw]">
             <div class="from">
                 <div class="from_head flex items-center gap-[2vw]">
@@ -110,11 +126,11 @@
                         F
                     </p>
                     <p>
-                        경주역
+                        {{item.delivery_start}}
                     </p>
                 </div>
                 <div class="from_body ml-[9vw]">
-                    2020-01-01 / 12:00
+                    {{item.delivery_date}}
                 </div>
             </div>
             <div class="to">
@@ -123,19 +139,31 @@
                         T
                     </p>
                     <p>
-                        경주역
+                        {{item.delivery_arrive}}
                     </p>
                 </div>
                 <div class="to_body ml-[9vw]">
-                    2020-01-01 / 12:00
+                    -
                 </div>
             </div>
         </div>
     </div>
+    {% endfor %}
+    {% else %}
+    <div class="flex flex-col items-center justify-center py-[8vh] px-[4vw]">
+        <p class="text-[4.5vw] text-gray-400 font-medium">진행 중인 배송이 없습니다</p>
+        <p class="text-[3.5vw] text-gray-300 mt-[2vw]">배송 대기 목록을 확인해보세요</p>
+    </div>
+    {% endif %}
     <p class="text-[4vw]">
         배송완료
     </p>
+    {% if myList_complete.length > 0 %}
+    {% for item in myList_complete %}
     <div class="card p-[1vw] bg-white rounded-[3.5vw]">
+        <p class="order_number hidden text-[#ABABAB]">
+            {{item.re_num}}
+        </p>
         <div class="card_body p-[2vw] text-black text-[4vw]">
             <div class="from">
                 <div class="from_head flex items-center gap-[2vw]">
@@ -143,11 +171,11 @@
                         F
                     </p>
                     <p>
-                        경주역
+                        {{item.delivery_start}}
                     </p>
                 </div>
                 <div class="from_body ml-[9vw]">
-                    2020-01-01 / 12:00
+                    {{item.delivery_date}}
                 </div>
             </div>
             <div class="to">
@@ -156,15 +184,22 @@
                         T
                     </p>
                     <p>
-                        경주역
+                        {{item.delivery_arrive}}
                     </p>
                 </div>
                 <div class="to_body ml-[9vw]">
-                    2020-01-01 / 12:00
+                    -
                 </div>
             </div>
         </div>
     </div>
+    {% endfor %}
+    {% else %}
+    <div class="flex flex-col items-center justify-center py-[8vh] px-[4vw]">
+        <p class="text-[4.5vw] text-gray-400 font-medium">완료된 배송이 없습니다</p>
+        <p class="text-[3.5vw] text-gray-300 mt-[2vw]">첫 번째 배송을 완료해보세요</p>
+    </div>
+    {% endif %}
 </div>
 
 {% endblock %}
@@ -201,9 +236,9 @@
     cards.forEach(card => {
         card.addEventListener('click', async () => {
             const res_num = card.querySelector('.order_number').textContent.trim();
-            console.log('res_num:',res_num);
+            console.log('res_num:', res_num);
             console.log('상세보기');
-            
+
             // 쿼리 파라미터로 res_num을 전달하여 detail 페이지로 이동
             window.location.href = `/detail?re_num=${res_num}`;
         });
