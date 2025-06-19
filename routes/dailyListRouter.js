@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../utils/supa');
+const moment = require('moment'); 
 
 router.get('/detail', async (req, res) => {
     const user = req.session.user;
@@ -16,7 +17,10 @@ router.get('/detail', async (req, res) => {
     }
 
     const queryDate = selectedDate.replace(/\./g, '-'); // '2025-06-17'
+    const nextDate = moment(queryDate).add(1, 'days').format('YYYY-MM-DD'); 
     const driverId = user.id;
+    let s_time = null;
+    let f_time = null;
 
     const { data, error } = await supabase
         .from('deliveryList')
@@ -30,7 +34,23 @@ router.get('/detail', async (req, res) => {
             price
         `)
         .eq('driver_id', driverId)
-        .eq('delivery_date', queryDate);
+        .gte('f_time', `${queryDate}T00:00:00.000`)   // 2025-06-18 00:00:00.000
+        .lt('f_time', `${nextDate}T00:00:00.000`);    // 2025-06-19 00:00:00.000
+
+        // 날짜 포맷팅 함수
+        function formatTime(timeStr) {
+            if (!timeStr) return '-';
+            const [date, time] = timeStr.split('T');
+            const [hour, minute] = time.split(':');
+            return `${date} ${hour}:${minute}`;
+        }
+    
+        // 각 row에 포맷된 시간 추가
+        const formattedList = data.map(item => ({
+            ...item,
+            s_time_formatted: formatTime(item.s_time),
+            f_time_formatted: formatTime(item.f_time),
+        }));
 
     if (error || !Array.isArray(data)) {
         console.error('❗ Supabase 조회 에러:', error?.message || error);
@@ -40,7 +60,7 @@ router.get('/detail', async (req, res) => {
     res.render('dailyList.html', {
         title: `${selectedDate} 배송 상세`,
         selectedDate,
-        deliveryList: data
+        deliveryList: formattedList,
     });
 });
 
