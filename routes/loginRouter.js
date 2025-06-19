@@ -3,9 +3,7 @@ const router = express.Router();
 const supabase = require('../utils/supa.js');
 
 router.get('/', async (req, res, next) => {
-    const {data, error} = await supabase.from('DriverList').select();
-    console.log(data);
-    res.render('login', {title: '로그인', data});
+    res.render('login', {title: '로그인'});
 })
 
 router.post('/', async (req, res, next) => {
