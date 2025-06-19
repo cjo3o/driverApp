@@ -65,10 +65,11 @@ router.post('/', async (req, res) => {
         driver_name,
         driver_phone,
         start_time,
-        finish_time
+        finish_time,
+        img_url,
     } = req.body;
 
-    console.log('driver_id:', driver_id);
+    console.log('img_url:', img_url);
     if (status === '접수') {
         const { data, error } = await supabase
             .from('delivery')
