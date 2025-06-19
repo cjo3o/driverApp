@@ -67,6 +67,11 @@
             <div class="flex justify-between w-full"><span>배송시작</span><span>{{s_time}}</span></div>
             <div class="flex justify-between w-full"><span>배송완료</span><span>{{f_time}}</span></div>
             {% endif %}
+            {% if deliveryData.situation === '배송중' %}
+            <input type="file" id="img_upload" accept="image/*" class="hidden">
+            <label for="img_upload" class="text-[4.5vw] bg-gray-200 rounded-[4vw] p-[3vw]">사진 선택</label>
+            <img src="" alt="배송 사진" class="preview hidden object-contain">
+            {% endif %}
         </div>
     </div>
     <!-- 하단 버튼 -->
@@ -85,6 +90,22 @@
     console.log('JavaScript에서 사용할 수 있는 deliveryData:', window.deliveryData);
 
     const submitBtn = document.querySelector('.submit');
+    const imgUpload = document.querySelector('#img_upload');
+    const preview = document.querySelector('.preview');
+
+    if (imgUpload) {
+        imgUpload.addEventListener('change', function () {
+            const file = this.files[0];
+
+            if (file && file.type.startsWith('image/')) {
+                const imageUrl = URL.createObjectURL(file);
+                preview.src = imageUrl;
+                preview.classList.remove('hidden');
+            } else {
+                alert('이미지 파일만 업로드 가능합니다.');
+            }
+        });
+    }
 
     function getKSTISOString() {
         const now = new Date();
@@ -127,17 +148,24 @@
     } else if (window.deliveryData.situation === '배송중') {
         submitBtn.innerHTML = '배송 완료';
         submitBtn.addEventListener('click', async () => {
-            alert('배송이 완료되었습니다.');
-            const result = await axios.post('/detail', {
-                re_num: window.deliveryData.re_num,
-                driver_id: window.user.id,
-                status: window.deliveryData.situation,
-                driver_name: window.user.name,
-                driver_phone: window.user.phone,
-                finish_time: getKSTISOString(),
-            });
-            if (result.data.redirectTo) {
-                window.location.href = result.data.redirectTo;
+            if (imgUpload.files.length === 0) {
+                alert('배송 사진을 선택해주세요.');
+                return;
+            } else {
+                alert('배송이 완료되었습니다.');
+                const result = await axios.post('/detail', {
+                    re_num: window.deliveryData.re_num,
+                    driver_id: window.user.id,
+                    status: window.deliveryData.situation,
+                    driver_name: window.user.name,
+                    driver_phone: window.user.phone,
+                    finish_time: getKSTISOString(),
+                    img_url: preview.src,
+                });
+                console.log(preview.src);
+                if (result.data.redirectTo) {
+                    window.location.href = result.data.redirectTo;
+                }
             }
         });
     } else if (window.deliveryData.situation === '배송완료') {
