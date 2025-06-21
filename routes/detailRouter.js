@@ -4,7 +4,7 @@ const supabase = require('../utils/supa');
 
 router.get('/', async (req, res) => {
     console.log('req.query:', req.query);
-    const { re_num } = req.query;
+    const {re_num} = req.query;
 
     let deliveryData = null;
     let deliveryStatus = null;
@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
 
     if (re_num) {
         try {
-            const { data, error } = await supabase
+            const {data, error} = await supabase
                 .from('delivery')
                 .select('*')
                 .eq('re_num', re_num)
@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
     }
 
     if (deliveryStatus !== '접수') {
-        const { data, error } = await supabase
+        const {data, error} = await supabase
             .from('deliveryList')
             .select('*')
             .eq('re_num', re_num)
@@ -71,40 +71,76 @@ router.post('/', async (req, res) => {
 
     console.log('img_url:', img_url);
     if (status === '접수') {
-        const { data, error } = await supabase
+        const {data, error} = await supabase
             .from('delivery')
             .update({
                 situation: '배송대기'
             })
             .eq('re_num', re_num)
             .single();
+
+        const {data: statLogs, error: logError} = await supabase
+            .from('status_logs')
+            .insert({
+                table_name: "delivery",
+                key_value: re_num,
+                prev_status: status,
+                new_status: "배송대기",
+                updated_at: new Date().toISOString(),
+                operator: driver_name,
+            });
+        
     } else if (status === '배송대기') {
-        const { data, error } = await supabase
+        const {data, error} = await supabase
             .from('delivery')
             .update({
                 situation: '배송중'
             })
             .eq('re_num', re_num)
             .single();
+
+        const {data: statLogs, error: logError} = await supabase
+            .from('status_logs')
+            .insert({
+                table_name: "delivery",
+                key_value: re_num,
+                prev_status: status,
+                new_status: "배송중",
+                updated_at: new Date().toISOString(),
+                operator: driver_name,
+            });
+
     } else if (status === '배송중') {
-        const { data, error } = await supabase
+        const {data, error} = await supabase
             .from('delivery')
             .update({
                 situation: '배송완료'
             })
             .eq('re_num', re_num)
             .single();
+
+        const {data: statLogs, error: logError} = await supabase
+            .from('status_logs')
+            .insert({
+                table_name: "delivery",
+                key_value: re_num,
+                prev_status: status,
+                new_status: "배송완료",
+                updated_at: new Date().toISOString(),
+                operator: driver_name,
+            });
+
     }
 
     // 예약정보 조회
-    const { data: reservation, error: reservationError } = await supabase
+    const {data: reservation, error: reservationError} = await supabase
         .from('delivery')
         .select('*')
         .eq('re_num', re_num)
         .single();
 
     // 마이리스트 추가 || 상태 업데이트
-    const { data: delivery, error: deliveryError } = await supabase
+    const {data: delivery, error: deliveryError} = await supabase
         .from('deliveryList')
         .upsert({
             re_num: re_num,
@@ -122,12 +158,12 @@ router.post('/', async (req, res) => {
             driver_phone: driver_phone,
             s_time: start_time,
             f_time: finish_time,
-        }, { onConflict: 're_num' })
+        }, {onConflict: 're_num'})
 
     if (deliveryError) {
         console.log('Supabase 오류:', deliveryError);
     }
-    res.json({ redirectTo: '/' });
+    res.json({redirectTo: '/'});
 });
 
 module.exports = router;
