@@ -28,7 +28,12 @@ router.get('/', async (req, res, next) => {
 
     const myList_waiting = myList.filter(item => item.status === '배송대기');
     const myList_delivering = myList.filter(item => item.status === '배송중');
-    const myList_complete = myList.filter(item => item.status === '배송완료');
+    const myList_complete = myList.filter(item => {
+        if (item.status === '배송완료' && item.f_time.split('T')[0] === now.toISOString().split('T')[0]) {
+            console.log('배송완료', item);
+            return item;
+        }
+    });
 
     res.render('main', {
         title: '메인페이지',

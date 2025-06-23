@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../utils/supa');
+const multer = require('multer');
+
+const upload = multer({
+    storage: multer.memoryStorage()
+});
 
 router.get('/', async (req, res) => {
     console.log('req.query:', req.query);
@@ -57,7 +62,7 @@ router.get('/', async (req, res) => {
     });
 });
 
-router.post('/', async (req, res) => {
+router.post('/', upload.single('delivery_photo'), async (req, res) => {
     const {
         re_num,
         driver_id,
@@ -66,10 +71,33 @@ router.post('/', async (req, res) => {
         driver_phone,
         start_time,
         finish_time,
-        img_url,
     } = req.body;
 
-    console.log('img_url:', img_url);
+    let photo_url = null;
+
+    if (status === '배송중') {
+        if (req.file) {
+            const file = req.file;
+            const fileName = `${re_num}_${Date.now()}`;
+            const {
+                error: uploadError
+            } = await supabase.storage
+                .from('deliveryconfilm')
+                .upload(fileName, file.buffer, {
+                    contentType: file.mimetype,
+                });
+
+            if (uploadError) {
+                console.error('Error uploading file:', uploadError);
+            } else {
+                const {
+                    data: urlData
+                } = supabase.storage.from('deliveryconfilm').getPublicUrl(fileName);
+                photo_url = urlData.publicUrl;
+            }
+        }
+    }
+
     if (status === '접수') {
         const {data, error} = await supabase
             .from('delivery')
@@ -158,6 +186,7 @@ router.post('/', async (req, res) => {
             driver_phone: driver_phone,
             s_time: start_time,
             f_time: finish_time,
+            photo_url: photo_url
         }, {onConflict: 're_num'})
 
     if (deliveryError) {
