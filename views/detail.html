@@ -153,16 +153,22 @@
                 return;
             } else {
                 alert('배송이 완료되었습니다.');
-                const result = await axios.post('/detail', {
-                    re_num: window.deliveryData.re_num,
-                    driver_id: window.user.id,
-                    status: window.deliveryData.situation,
-                    driver_name: window.user.name,
-                    driver_phone: window.user.phone,
-                    finish_time: getKSTISOString(),
-                    img_url: preview.src,
+
+                const formData = new FormData();
+                formData.append('re_num', window.deliveryData.re_num);
+                formData.append('driver_id', window.user.id);
+                formData.append('status', window.deliveryData.situation);
+                formData.append('driver_name', window.user.name);
+                formData.append('driver_phone', window.user.phone);
+                formData.append('finish_time', getKSTISOString());
+                formData.append('delivery_photo', imgUpload.files[0]);
+
+                const result = await axios.post('/detail', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
                 });
-                console.log(preview.src);
+
                 if (result.data.redirectTo) {
                     window.location.href = result.data.redirectTo;
                 }
