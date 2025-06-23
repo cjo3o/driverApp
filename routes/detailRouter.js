@@ -2,8 +2,12 @@ const express = require('express');
 const router = express.Router();
 const supabase = require('../utils/supa');
 const axios = require('axios');
+const multer = require('multer');
 
-// /detail?re_num= 또는 /detail?dl_id=
+const upload = multer({
+    storage: multer.memoryStorage()
+});
+
 router.get('/', async (req, res) => {
     console.log('req.query:', req.query);
     const { re_num, dl_id } = req.query;
@@ -80,7 +84,7 @@ router.get('/', async (req, res) => {
 });
 
 // 상태 변경 및 마이리스트 추가
-router.post('/', async (req, res) => {
+router.post('/', upload.single('delivery_photo'), async (req, res) => {
     const {
         re_num,
         driver_id,
@@ -89,10 +93,9 @@ router.post('/', async (req, res) => {
         driver_phone,
         start_time,
         finish_time,
-        img_url,
     } = req.body;
 
-    console.log('img_url:', img_url);
+    let photo_url = null;
 
     let nextStatus = '';
     if (status === '접수') nextStatus = '배송대기';
@@ -103,14 +106,14 @@ router.post('/', async (req, res) => {
         return res.status(400).json({ error: '올바르지 않은 상태입니다.' });
     }
 
-        // 배송 상태 업데이트
-        await supabase
+    // 배송 상태 업데이트
+    await supabase
         .from('delivery')
         .update({ situation: nextStatus })
         .eq('re_num', re_num)
         .single();
 
-        // 상태 로그 저장장
+        // 상태 로그 저장창
         await supabase
             .from('status_logs')
             .insert({
@@ -129,25 +132,27 @@ router.post('/', async (req, res) => {
             .eq('re_num', re_num)
             .single();
 
-        const { error: deliveryError } = await supabase
-            .from('deliveryList')
-            .upsert({
-                re_num: re_num,
-                driver_id,
-                status: reservation.situation,
-                delivery_date: reservation.delivery_date,
-                delivery_start: reservation.delivery_start,
-                delivery_arrive: reservation.delivery_arrive,
-                price: reservation.price,
-                under: reservation.under,
-                over: reservation.over,
-                customer_name: reservation.name,
-                customer_phone: reservation.phone,
-                driver_name,
-                driver_phone,
-                s_time: start_time,
-                f_time: finish_time,
-            }, { onConflict: 're_num' });
+    // 마이리스트 추가 || 상태 업데이트
+    const { error: deliveryError} = await supabase
+        .from('deliveryList')
+        .upsert({
+            re_num: re_num,
+            driver_id: driver_id,
+            status: reservation.situation,
+            delivery_date: reservation.delivery_date,
+            delivery_start: reservation.delivery_start,
+            delivery_arrive: reservation.delivery_arrive,
+            price: reservation.price,
+            under: reservation.under,
+            over: reservation.over,
+            customer_name: reservation.name,
+            customer_phone: reservation.phone,
+            driver_name: driver_name,
+            driver_phone: driver_phone,
+            s_time: start_time,
+            f_time: finish_time,
+            photo_url: photo_url
+        }, {onConflict: 're_num'})
 
         if (deliveryError) {
             console.log('Supabase 오류:', deliveryError);
@@ -160,7 +165,7 @@ router.post('/', async (req, res) => {
                     .eq('re_num', re_num)
                     .limit(1)
                     .maybeSingle();
-        
+
                 if (findError || !foundDL) {
                     console.error('deliveryList에서 dl_id를 찾을 수 없습니다.');
                 } else {

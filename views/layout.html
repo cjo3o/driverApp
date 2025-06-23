@@ -12,34 +12,40 @@
     {% endblock %}
 </head>
 <body class="m-0 p-0 bg-gray-800 text-white">
-    <div class="flex justify-between items-center p-3 border-b border-white">
-        <button class="bg-transparent border-none cursor-pointer" type="button" onclick="back()">
-            <img src="/public/icons/backward.png" alt="back" class="w-6 h-6">
+    <div class="flex justify-between items-center p-[2vw] border-b border-white fixed w-full z-10000">
+        <button class="backBtn bg-transparent border-none cursor-pointer" type="button" onclick="back()">
+            <img src="/public/icons/backward.png" alt="back" class="w-[5vw] h-[5vw]">
         </button>
-        <a class="flex-grow text-center text-xl font-bold text-white no-underline" href="/">WITH GO</a>
+        <a class="flex-grow text-center text-[5vw] font-bold text-white no-underline" href="/">WITH GO</a>
         <button class="bg-transparent border-none cursor-pointer" type="button" onclick="logout()">
-            <img src="/public/icons/logout.png" alt="logout" class="w-6 h-6">
+            <img src="/public/icons/logout.png" alt="logout" class="w-[5vw] h-[5vw]">
         </button>
     </div>
     {% block content %}
     {% endblock %}
     <div
-        class="fixed bg-gray-800 bottom-0 w-full p-2 flex justify-around items-center text-center border-t border-white">
-        <a class="text-white no-underline" href="/alert">
-            <img src="/public/icons/bell.png" alt="alert" class="w-5 h-5 mx-auto">
-            <p class="m-0 text-white text-xs">알림</p>
+        class="fixed bg-gray-800 bottom-0 w-full p-[2vw] flex justify-around items-center text-center border-t border-white">
+        <a class="flex flex-col items-center justify-center text-white no-underline" href="/alert">
+            <img src="/public/icons/bell.png" alt="alert" class="w-[5vw] h-[5vw] mx-auto">
+            <p class="m-0 text-white text-[3vw]">알림</p>
         </a>
-        <a class="text-white no-underline" href="/">
-            <img src="/public/icons/home.png" alt="home" class="w-5 h-5 mx-auto">
-            <p class="m-0 text-white text-xs">홈</p>
+        <a class="flex flex-col items-center justify-center text-white no-underline" href="/">
+            <img src="/public/icons/home.png" alt="home" class="w-[5vw] h-[5vw] mx-auto">
+            <p class="m-0 text-white text-[3vw]">홈</p>
         </a>
-        <a class="text-white no-underline" href="/money">
-            <img src="/public/icons/money.png" alt="money" class="w-5 h-5 mx-auto">
-            <p class="m-0 text-white text-xs">정산</p>
+        <a class="flex flex-col items-center justify-center text-white no-underline" href="/money">
+            <img src="/public/icons/money.png" alt="money" class="w-[5vw] h-[5vw] mx-auto">
+            <p class="m-0 text-white text-[3vw]">정산</p>
         </a>
     </div>
 
 <script>
+    const backBtn = document.querySelector('.backBtn');
+
+    if (window.location.pathname === '/' || window.location.pathname === '/main') {
+        backBtn.classList.add('opacity-0');
+    }
+
     function back() {
         // 로그인 후 메인 페이지에서 뒤로가기를 막기 위해
         // 현재 페이지가 메인 페이지이고, 이전 페이지가 로그인 페이지인 경우 홈으로 이동
@@ -53,8 +59,7 @@
     }
 
     function logout() {
-        localStorage.removeItem('token');
-        window.location.href = '/login'; // 실제 경로에 맞게
+        window.location.href = '/login/logout'; // 실제 경로에 맞게
     }
 </script>
 {% block script %}

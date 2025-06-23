@@ -4,7 +4,13 @@ const supabase = require('../utils/supa.js');
 
 router.get('/', async (req, res, next) => {
     res.render('login', {title: '로그인'});
-})
+});
+
+router.get('/logout', async (req, res, next) => {
+    req.session.destroy();
+    res.clearCookie('session-cookie');
+    res.redirect('/login');
+});
 
 router.post('/', async (req, res, next) => {
     console.log(req.body);

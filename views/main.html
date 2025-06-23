@@ -2,204 +2,219 @@
 {% block style %}
 {% endblock %}
 {% block content %}
-<div class="title p-[4vw] flex justify-between items-center">
-    <div>
-        <h1 class="text-[10vw] font-bold text-white">안녕하세요,</h1>
-        <h1 class="text-[10vw] font-bold text-white">{{user.name}}기사님</h1>
+<div class="main_container relative">
+    <div class="title_container pt-[7vh]">
+        <div class="title p-[4vw] flex justify-between items-center">
+            <div>
+                <h1 class="text-[10vw] font-bold text-white">안녕하세요,</h1>
+                <h1 class="text-[10vw] font-bold text-white">{{user.name}}기사님</h1>
+            </div>
+            <div class="profile bg-white rounded-full w-[20vw] h-[20vw]">
+                <img src="{{user.photo_url}}" alt="profile" class="w-full h-full object-cover rounded-full">
+            </div>
+        </div>
+        <div class="date text-[5vw] px-[4vw]">
+            오늘은 {{month}}월 {{date}}일 {{dayOfWeek}}요일입니다.
+        </div>
     </div>
-    <div class="profile bg-white rounded-full w-[20vw] h-[20vw]">
-        <img src="{{user.photo_url}}" alt="profile" class="w-full h-full object-cover rounded-full">
-    </div>
-</div>
-<div class="date text-[5vw] px-[4vw]">
-    오늘은 {{month}}월 {{date}}일 {{dayOfWeek}}요일입니다.
-</div>
-<div class="mt-[5vw] text-[4.5vw] flex justify-center items-center gap-[15vw]">
-    <div class="order_btn border-t-2 p-[1vw]">
-        ORDER
-    </div>
-    <div class="my_btn text-[#cccccc] p-[1vw]">
-        MY LIST
-    </div>
-</div>
-<div class="order_list px-[4vw] py-[2vh] h-full max-h-[47vh] mt-[1.5vw] flex flex-col gap-[3vw] overflow-y-auto">
-    {% for item in resData %}
-    <div class="card p-[1vw] bg-white rounded-[3.5vw]">
-        <div class="card_head pb-[1vw] flex justify-between border-b-2 border-dotted border-[#cccccc]">
-            <p class="px-[2vw] text-[4vw] text-[#ABABAB]">
+    <div class="body_container transition-all duration-300 ease-in-out pb-[10vh]">
+        <div class="select_option mt-[5vw] text-[4.5vw] flex justify-center items-center gap-[15vw]">
+            <div class="order_btn border-t-2 p-[1vw]">
                 ORDER
+            </div>
+            <div class="my_btn text-[#cccccc] p-[1vw]">
+                MY LIST
+            </div>
+        </div>
+        <div
+            class="order_list px-[4vw] py-[2vh] h-full max-h-[47vh] mt-[1.5vw] flex flex-col gap-[3vw] overflow-y-auto">
+            {% for item in resData %}
+            <div class="card p-[1vw] bg-white rounded-[3.5vw]">
+                <div class="card_head pb-[1vw] flex justify-between border-b-2 border-dotted border-[#cccccc]">
+                    <p class="px-[2vw] text-[4vw] text-[#ABABAB]">
+                        ORDER
+                    </p>
+                    <p class="order_number hidden text-[#ABABAB]">
+                        {{item.re_num}}
+                    </p>
+                </div>
+                <div class="card_body px-[2vw] pt-[3vw] text-black text-[4vw]">
+                    <div class="from">
+                        <div class="from_head flex items-center gap-[2vw]">
+                            <p
+                                class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
+                                F
+                            </p>
+                            <p class="from_name">
+                                {{item.delivery_start}}
+                            </p>
+                        </div>
+                        <div class="from_body ml-[9vw]">
+                            {{item.delivery_date}}
+                        </div>
+                    </div>
+                    <div class="to">
+                        <div class="to_head flex items-center gap-[2vw]">
+                            <p
+                                class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
+                                T
+                            </p>
+                            <p class="to_name">
+                                {{item.delivery_arrive}}
+                            </p>
+                        </div>
+                        <div class="to_body ml-[9vw]">
+                            -
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="my_list p-[4vw] h-full max-h-[47vh] mt-[1.5vw] hidden flex-col gap-[3vw] overflow-y-auto">
+            <p class="text-[4vw]">
+                배송대기
             </p>
-            <p class="order_number hidden text-[#ABABAB]">
-                {{item.re_num}}
+            {% if myList_waiting.length > 0 %}
+            {% for item in myList_waiting %}
+            <div class="card p-[1vw] bg-white rounded-[3.5vw]">
+                <p class="order_number hidden text-[#ABABAB]">
+                    {{item.re_num}}
+                </p>
+                <div class="card_body p-[2vw] text-black text-[4vw]">
+                    <div class="from">
+                        <div class="from_head flex items-center gap-[2vw]">
+                            <p
+                                class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
+                                F
+                            </p>
+                            <p>
+                                {{item.delivery_start}}
+                            </p>
+                        </div>
+                        <div class="from_body ml-[9vw]">
+                            {{item.delivery_date}}
+                        </div>
+                    </div>
+                    <div class="to">
+                        <div class="to_head flex items-center gap-[2vw]">
+                            <p
+                                class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
+                                T
+                            </p>
+                            <p>
+                                {{item.delivery_arrive}}
+                            </p>
+                        </div>
+                        <div class="to_body ml-[9vw]">
+                            -
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="flex flex-col items-center justify-center py-[8vh] px-[4vw]">
+                <p class="text-[4.5vw] text-gray-400 font-medium">배송 대기 중인 주문이 없습니다</p>
+                <p class="text-[3.5vw] text-gray-300 mt-[2vw]">새로운 주문을 확인해보세요</p>
+            </div>
+            {% endif %}
+            <p class="text-[4vw]">
+                배송중
             </p>
-        </div>
-        <div class="card_body px-[2vw] pt-[3vw] text-black text-[4vw]">
-            <div class="from">
-                <div class="from_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        F
-                    </p>
-                    <p class="from_name">
-                        {{item.delivery_start}}
-                    </p>
-                </div>
-                <div class="from_body ml-[9vw]">
-                    {{item.delivery_date}}
-                </div>
-            </div>
-            <div class="to">
-                <div class="to_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        T
-                    </p>
-                    <p class="to_name">
-                        {{item.delivery_arrive}}
-                    </p>
-                </div>
-                <div class="to_body ml-[9vw]">
-                    -
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-</div>
-<div class="my_list p-[4vw] h-full max-h-[47vh] mt-[1.5vw] hidden flex-col gap-[3vw] overflow-y-auto">
-    <p class="text-[4vw]">
-        배송대기
-    </p>
-    {% if myList_waiting.length > 0 %}
-    {% for item in myList_waiting %}
-    <div class="card p-[1vw] bg-white rounded-[3.5vw]">
-        <p class="order_number hidden text-[#ABABAB]">
-            {{item.re_num}}
-        </p>
-        <div class="card_body p-[2vw] text-black text-[4vw]">
-            <div class="from">
-                <div class="from_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        F
-                    </p>
-                    <p>
-                        {{item.delivery_start}}
-                    </p>
-                </div>
-                <div class="from_body ml-[9vw]">
-                    {{item.delivery_date}}
+            {% if myList_delivering.length > 0 %}
+            {% for item in myList_delivering %}
+            <div class="card p-[1vw] bg-white rounded-[3.5vw]">
+                <p class="order_number hidden text-[#ABABAB]">
+                    {{item.re_num}}
+                </p>
+                <div class="card_body p-[2vw] text-black text-[4vw]">
+                    <div class="from">
+                        <div class="from_head flex items-center gap-[2vw]">
+                            <p
+                                class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
+                                F
+                            </p>
+                            <p>
+                                {{item.delivery_start}}
+                            </p>
+                        </div>
+                        <div class="from_body ml-[9vw]">
+                            {{item.delivery_date}}
+                        </div>
+                    </div>
+                    <div class="to">
+                        <div class="to_head flex items-center gap-[2vw]">
+                            <p
+                                class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
+                                T
+                            </p>
+                            <p>
+                                {{item.delivery_arrive}}
+                            </p>
+                        </div>
+                        <div class="to_body ml-[9vw]">
+                            -
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="to">
-                <div class="to_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        T
-                    </p>
-                    <p>
-                        {{item.delivery_arrive}}
-                    </p>
-                </div>
-                <div class="to_body ml-[9vw]">
-                    -
+            {% endfor %}
+            {% else %}
+            <div class="flex flex-col items-center justify-center py-[8vh] px-[4vw]">
+                <p class="text-[4.5vw] text-gray-400 font-medium">진행 중인 배송이 없습니다</p>
+                <p class="text-[3.5vw] text-gray-300 mt-[2vw]">배송 대기 목록을 확인해보세요</p>
+            </div>
+            {% endif %}
+            <p class="text-[4vw]">
+                배송완료
+            </p>
+            {% if myList_complete.length > 0 %}
+            {% for item in myList_complete %}
+            <div class="card p-[1vw] bg-white rounded-[3.5vw]">
+                <p class="order_number hidden text-[#ABABAB]">
+                    {{item.re_num}}
+                </p>
+                <div class="card_body p-[2vw] text-black text-[4vw]">
+                    <div class="from">
+                        <div class="from_head flex items-center gap-[2vw]">
+                            <p
+                                class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
+                                F
+                            </p>
+                            <p>
+                                {{item.delivery_start}}
+                            </p>
+                        </div>
+                        <div class="from_body ml-[9vw]">
+                            {{item.delivery_date}}
+                        </div>
+                    </div>
+                    <div class="to">
+                        <div class="to_head flex items-center gap-[2vw]">
+                            <p
+                                class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
+                                T
+                            </p>
+                            <p>
+                                {{item.delivery_arrive}}
+                            </p>
+                        </div>
+                        <div class="to_body ml-[9vw]">
+                            -
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    {% endfor %}
-    {% else %}
-    <div class="flex flex-col items-center justify-center py-[8vh] px-[4vw]">
-        <p class="text-[4.5vw] text-gray-400 font-medium">배송 대기 중인 주문이 없습니다</p>
-        <p class="text-[3.5vw] text-gray-300 mt-[2vw]">새로운 주문을 확인해보세요</p>
-    </div>
-    {% endif %}
-    <p class="text-[4vw]">
-        배송중
-    </p>
-    {% if myList_delivering.length > 0 %}
-    {% for item in myList_delivering %}
-    <div class="card p-[1vw] bg-white rounded-[3.5vw]">
-        <p class="order_number hidden text-[#ABABAB]">
-            {{item.re_num}}
-        </p>
-        <div class="card_body p-[2vw] text-black text-[4vw]">
-            <div class="from">
-                <div class="from_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        F
-                    </p>
-                    <p>
-                        {{item.delivery_start}}
-                    </p>
-                </div>
-                <div class="from_body ml-[9vw]">
-                    {{item.delivery_date}}
-                </div>
+            {% endfor %}
+            {% else %}
+            <div class="flex flex-col items-center justify-center py-[8vh] px-[4vw]">
+                <p class="text-[4.5vw] text-gray-400 font-medium">완료된 배송이 없습니다</p>
+                <p class="text-[3.5vw] text-gray-300 mt-[2vw]">첫 번째 배송을 완료해보세요</p>
             </div>
-            <div class="to">
-                <div class="to_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        T
-                    </p>
-                    <p>
-                        {{item.delivery_arrive}}
-                    </p>
-                </div>
-                <div class="to_body ml-[9vw]">
-                    -
-                </div>
-            </div>
+            {% endif %}
         </div>
     </div>
-    {% endfor %}
-    {% else %}
-    <div class="flex flex-col items-center justify-center py-[8vh] px-[4vw]">
-        <p class="text-[4.5vw] text-gray-400 font-medium">진행 중인 배송이 없습니다</p>
-        <p class="text-[3.5vw] text-gray-300 mt-[2vw]">배송 대기 목록을 확인해보세요</p>
-    </div>
-    {% endif %}
-    <p class="text-[4vw]">
-        배송완료
-    </p>
-    {% if myList_complete.length > 0 %}
-    {% for item in myList_complete %}
-    <div class="card p-[1vw] bg-white rounded-[3.5vw]">
-        <p class="order_number hidden text-[#ABABAB]">
-            {{item.re_num}}
-        </p>
-        <div class="card_body p-[2vw] text-black text-[4vw]">
-            <div class="from">
-                <div class="from_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        F
-                    </p>
-                    <p>
-                        {{item.delivery_start}}
-                    </p>
-                </div>
-                <div class="from_body ml-[9vw]">
-                    {{item.delivery_date}}
-                </div>
-            </div>
-            <div class="to">
-                <div class="to_head flex items-center gap-[2vw]">
-                    <p class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">
-                        T
-                    </p>
-                    <p>
-                        {{item.delivery_arrive}}
-                    </p>
-                </div>
-                <div class="to_body ml-[9vw]">
-                    -
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-    {% else %}
-    <div class="flex flex-col items-center justify-center py-[8vh] px-[4vw]">
-        <p class="text-[4.5vw] text-gray-400 font-medium">완료된 배송이 없습니다</p>
-        <p class="text-[3.5vw] text-gray-300 mt-[2vw]">첫 번째 배송을 완료해보세요</p>
-    </div>
-    {% endif %}
 </div>
 
 {% endblock %}
@@ -210,7 +225,41 @@
     const orderList = document.querySelector('.order_list');
     const myList = document.querySelector('.my_list');
     const cards = document.querySelectorAll('.card');
+    const selectOption = document.querySelector('.select_option');
+    const mainContainer = document.querySelector('.main_container');
+    const bodyContainer = document.querySelector('.body_container');
 
+    // if (navigator.geolocation) {
+    //     navigator.geolocation.getCurrentPosition(
+    //         function (position) {
+    //             const latitude = position.coords.latitude;
+    //             const longitude = position.coords.longitude;
+    //             console.log("위도:", latitude);
+    //             console.log("경도:", longitude);
+    //         },
+    //         function (error) {
+    //             console.error("위치 정보를 가져오는데 실패했습니다:", error.message);
+    //         }
+    //     );
+    // } else {
+    //     console.error("이 브라우저는 Geolocation을 지원하지 않습니다.");
+    // }
+
+    // navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
+    //     enableHighAccuracy: true,  // GPS 정확도 우선
+    //     timeout: 5000,             // 5초 이내에 응답 없으면 실패
+    //     maximumAge: 0              // 캐시된 위치 사용 안함
+    // });
+
+    // const watchId = navigator.geolocation.watchPosition(
+    //     (position) => {
+    //         console.log("계속 추적 중:", position.coords);
+    //     },
+    //     (error) => {
+    //         console.error("오류:", error.message);
+    //     }
+    // );
+    
     orderBtn.addEventListener('click', () => {
         if (!orderBtn.classList.contains('border-t-2')) {
             orderBtn.classList.add('border-t-2');
@@ -243,6 +292,30 @@
             window.location.href = `/detail?re_num=${res_num}`;
         });
     });
+
+    orderList.addEventListener('scroll', () => {
+        if (orderList.scrollTop === 0) {
+            // 보이게 (부드럽게 fade-in)
+            bodyContainer.classList.remove('absolute', 'top-[7vh]', 'w-full', 'bg-gray-800');
+            orderList.style.maxHeight = '47vh';
+        } else {
+            // 숨기게 (부드럽게 fade-out)
+            bodyContainer.classList.add('absolute', 'top-[7vh]', 'w-full', 'bg-gray-800');
+            orderList.style.maxHeight = '72vh';
+        }
+    });
+    myList.addEventListener('scroll', () => {
+        if (myList.scrollTop === 0) {
+            // 보이게 (부드럽게 fade-in)
+            bodyContainer.classList.remove('absolute', 'top-[7vh]', 'w-full', 'bg-gray-800');
+            myList.style.maxHeight = '47vh';
+        } else {
+            // 숨기게 (부드럽게 fade-out)
+            bodyContainer.classList.add('absolute', 'top-[7vh]', 'w-full', 'bg-gray-800');
+            myList.style.maxHeight = '72vh';
+        }
+    });
+
 
 </script>
 {% endblock %}
