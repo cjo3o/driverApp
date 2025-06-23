@@ -229,36 +229,36 @@
     const mainContainer = document.querySelector('.main_container');
     const bodyContainer = document.querySelector('.body_container');
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            function (position) {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-                console.log("위도:", latitude);
-                console.log("경도:", longitude);
-            },
-            function (error) {
-                console.error("위치 정보를 가져오는데 실패했습니다:", error.message);
-            }
-        );
-    } else {
-        console.error("이 브라우저는 Geolocation을 지원하지 않습니다.");
-    }
+    // if (navigator.geolocation) {
+    //     navigator.geolocation.getCurrentPosition(
+    //         function (position) {
+    //             const latitude = position.coords.latitude;
+    //             const longitude = position.coords.longitude;
+    //             console.log("위도:", latitude);
+    //             console.log("경도:", longitude);
+    //         },
+    //         function (error) {
+    //             console.error("위치 정보를 가져오는데 실패했습니다:", error.message);
+    //         }
+    //     );
+    // } else {
+    //     console.error("이 브라우저는 Geolocation을 지원하지 않습니다.");
+    // }
 
-    navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
-        enableHighAccuracy: true,  // GPS 정확도 우선
-        timeout: 5000,             // 5초 이내에 응답 없으면 실패
-        maximumAge: 0              // 캐시된 위치 사용 안함
-    });
+    // navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
+    //     enableHighAccuracy: true,  // GPS 정확도 우선
+    //     timeout: 5000,             // 5초 이내에 응답 없으면 실패
+    //     maximumAge: 0              // 캐시된 위치 사용 안함
+    // });
 
-    const watchId = navigator.geolocation.watchPosition(
-        (position) => {
-            console.log("계속 추적 중:", position.coords);
-        },
-        (error) => {
-            console.error("오류:", error.message);
-        }
-    );
+    // const watchId = navigator.geolocation.watchPosition(
+    //     (position) => {
+    //         console.log("계속 추적 중:", position.coords);
+    //     },
+    //     (error) => {
+    //         console.error("오류:", error.message);
+    //     }
+    // );
     
     orderBtn.addEventListener('click', () => {
         if (!orderBtn.classList.contains('border-t-2')) {

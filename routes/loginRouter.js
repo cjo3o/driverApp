@@ -7,7 +7,7 @@ router.get('/', async (req, res, next) => {
 });
 
 router.get('/logout', async (req, res, next) => {
-    req.session.user.destroy();
+    req.session.destroy();
     res.clearCookie('session-cookie');
     res.redirect('/login');
 });
