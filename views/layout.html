@@ -53,8 +53,7 @@
     }
 
     function logout() {
-        localStorage.removeItem('token');
-        window.location.href = '/login'; // 실제 경로에 맞게
+        window.location.href = '/login/logout'; // 실제 경로에 맞게
     }
 </script>
 {% block script %}
