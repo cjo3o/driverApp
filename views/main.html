@@ -3,7 +3,7 @@
 {% endblock %}
 {% block content %}
 <div class="main_container relative">
-    <div class="title_container">
+    <div class="title_container pt-[7vh]">
         <div class="title p-[4vw] flex justify-between items-center">
             <div>
                 <h1 class="text-[10vw] font-bold text-white">안녕하세요,</h1>
@@ -17,7 +17,7 @@
             오늘은 {{month}}월 {{date}}일 {{dayOfWeek}}요일입니다.
         </div>
     </div>
-    <div class="body_container transition-all duration-300 ease-in-out">
+    <div class="body_container transition-all duration-300 ease-in-out pb-[10vh]">
         <div class="select_option mt-[5vw] text-[4.5vw] flex justify-center items-center gap-[15vw]">
             <div class="order_btn border-t-2 p-[1vw]">
                 ORDER
@@ -296,22 +296,22 @@
     orderList.addEventListener('scroll', () => {
         if (orderList.scrollTop === 0) {
             // 보이게 (부드럽게 fade-in)
-            bodyContainer.classList.remove('absolute', 'top-0', 'w-full', 'bg-gray-800');
+            bodyContainer.classList.remove('absolute', 'top-[7vh]', 'w-full', 'bg-gray-800');
             orderList.style.maxHeight = '47vh';
         } else {
             // 숨기게 (부드럽게 fade-out)
-            bodyContainer.classList.add('absolute', 'top-0', 'w-full', 'bg-gray-800');
+            bodyContainer.classList.add('absolute', 'top-[7vh]', 'w-full', 'bg-gray-800');
             orderList.style.maxHeight = '72vh';
         }
     });
     myList.addEventListener('scroll', () => {
         if (myList.scrollTop === 0) {
             // 보이게 (부드럽게 fade-in)
-            bodyContainer.classList.remove('absolute', 'top-0', 'w-full', 'bg-gray-800');
+            bodyContainer.classList.remove('absolute', 'top-[7vh]', 'w-full', 'bg-gray-800');
             myList.style.maxHeight = '47vh';
         } else {
             // 숨기게 (부드럽게 fade-out)
-            bodyContainer.classList.add('absolute', 'top-0', 'w-full', 'bg-gray-800');
+            bodyContainer.classList.add('absolute', 'top-[7vh]', 'w-full', 'bg-gray-800');
             myList.style.maxHeight = '72vh';
         }
     });
