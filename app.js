@@ -36,14 +36,14 @@ nunjucks.configure('views', {
 
 const mainRouter = require('./routes/mainRouter.js');
 const loginRouter = require('./routes/loginRouter.js');
-const bellRouter = require('./routes/bellRouter.js');
+const alertRouter = require('./routes/alertRouter.js');
 const moneyRouter = require('./routes/moneyRouter.js');
 const dailyListRouter = require('./routes/dailyListRouter.js');
 const detailRouter = require('./routes/detailRouter.js');
 
 app.use('/', mainRouter);
 app.use('/login', loginRouter);
-app.use('/bell', bellRouter);
+app.use('/alert', alertRouter);
 app.use('/money', moneyRouter);
 app.use('/daily', dailyListRouter);
 app.use('/detail', detailRouter);

@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+{% block style %}
+{% endblock %}
+{% block content %}
+<div class="px-[4vw] py-[2vh]">
+    <div class="top text-xl font-bold mb-[2vw] text-center">
+        <h1>알림 LIST</h1>
+    </div>
+    <!-- alert list -->
+    <div id="alert-container" class="space-y-[4vw]"></div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const container = document.getElementById('alert-container');
+
+        try {
+            const res = await fetch('/alert/list');
+            const alertData = await res.json();
+
+            Object.keys(alertData).forEach(dateKey => {
+                // 날짜 라벨
+                const dateLabel = document.createElement('div');
+                dateLabel.className = 'text-[4vw] font-semibold text-gray-700';
+                dateLabel.textContent = dateKey;
+                container.appendChild(dateLabel);
+
+                // 알림 카드들
+                alertData[dateKey].forEach(alert => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-[3.5vw] p-[4vw] text-[4vw] shadow text-gray-800 space-y-[1vw]';
+
+                    const message = document.createElement('div');
+                    message.textContent = alert.message;
+
+                    const time = document.createElement('div');
+                    time.className = 'text-[3.2vw] text-right text-gray-500';
+                    time.textContent = alert.created_at;
+
+                    card.appendChild(message);
+                    card.appendChild(time);
+                    container.appendChild(card);
+                });
+            });
+        } catch (err) {
+            console.error('🚨 알림 불러오기 실패:', err);
+            container.innerHTML = '<p class="text-red-500">알림을 불러오지 못했습니다.</p>';
+        }
+    });
+</script>
+{% endblock %}

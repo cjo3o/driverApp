@@ -1,10 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../utils/supa');
+const { createAlert } = require('./alertRouter'); // 알림 기록 함수
+const { sendPushToCustomer } = require('../utils/push'); // 알림 전송 함수
+const axios = require('axios');
+
 
 router.get('/', async (req, res) => {
     console.log('req.query:', req.query);
-    const {re_num} = req.query;
+    const { re_num } = req.query;
 
     let deliveryData = null;
     let deliveryStatus = null;
@@ -13,7 +17,7 @@ router.get('/', async (req, res) => {
 
     if (re_num) {
         try {
-            const {data, error} = await supabase
+            const { data, error } = await supabase
                 .from('delivery')
                 .select('*')
                 .eq('re_num', re_num)
@@ -33,7 +37,7 @@ router.get('/', async (req, res) => {
     }
 
     if (deliveryStatus !== '접수') {
-        const {data, error} = await supabase
+        const { data, error } = await supabase
             .from('deliveryList')
             .select('*')
             .eq('re_num', re_num)
@@ -71,7 +75,7 @@ router.post('/', async (req, res) => {
 
     console.log('img_url:', img_url);
     if (status === '접수') {
-        const {data, error} = await supabase
+        const { data, error } = await supabase
             .from('delivery')
             .update({
                 situation: '배송대기'
@@ -79,7 +83,7 @@ router.post('/', async (req, res) => {
             .eq('re_num', re_num)
             .single();
 
-        const {data: statLogs, error: logError} = await supabase
+        const { data: statLogs, error: logError } = await supabase
             .from('status_logs')
             .insert({
                 table_name: "delivery",
@@ -89,9 +93,27 @@ router.post('/', async (req, res) => {
                 updated_at: new Date().toISOString(),
                 operator: driver_name,
             });
-        
+
+        // 알림 전송
+        const { data: foundDL, error: findError } = await supabase
+            .from('deliveryList')
+            .select('dl_id')
+            .eq('re_num', re_num)
+            .single();
+
+        if (findError || !foundDL) {
+            console.error('deliveryList에서 dl_id 조회 실패:', findError);
+        } else {
+            const dl_id = foundDL.dl_id;
+            const alertRes = await axios.post('http://localhost:7777/alert', {
+                dl_id,
+                status
+            });
+            console.log('🔔 알림 전송 완료:', alertRes.data.message);
+        }
+
     } else if (status === '배송대기') {
-        const {data, error} = await supabase
+        const { data, error } = await supabase
             .from('delivery')
             .update({
                 situation: '배송중'
@@ -99,7 +121,7 @@ router.post('/', async (req, res) => {
             .eq('re_num', re_num)
             .single();
 
-        const {data: statLogs, error: logError} = await supabase
+        const { data: statLogs, error: logError } = await supabase
             .from('status_logs')
             .insert({
                 table_name: "delivery",
@@ -109,9 +131,26 @@ router.post('/', async (req, res) => {
                 updated_at: new Date().toISOString(),
                 operator: driver_name,
             });
+        // 알림 전송
+        const { data: foundDL, error: findError } = await supabase
+            .from('deliveryList')
+            .select('dl_id')
+            .eq('re_num', re_num)
+            .single();
+
+        if (findError || !foundDL) {
+            console.error('deliveryList에서 dl_id 조회 실패:', findError);
+        } else {
+            const dl_id = foundDL.dl_id;
+            const alertRes = await axios.post('http://localhost:7777/alert', {
+                dl_id,
+                status
+            });
+            console.log('🔔 알림 전송 완료:', alertRes.data.message);
+        }
 
     } else if (status === '배송중') {
-        const {data, error} = await supabase
+        const { data, error } = await supabase
             .from('delivery')
             .update({
                 situation: '배송완료'
@@ -119,7 +158,7 @@ router.post('/', async (req, res) => {
             .eq('re_num', re_num)
             .single();
 
-        const {data: statLogs, error: logError} = await supabase
+        const { data: statLogs, error: logError } = await supabase
             .from('status_logs')
             .insert({
                 table_name: "delivery",
@@ -129,18 +168,34 @@ router.post('/', async (req, res) => {
                 updated_at: new Date().toISOString(),
                 operator: driver_name,
             });
+        // 알림 전송
+        const { data: foundDL, error: findError } = await supabase
+            .from('deliveryList')
+            .select('dl_id')
+            .eq('re_num', re_num)
+            .single();
 
+        if (findError || !foundDL) {
+            console.error('deliveryList에서 dl_id 조회 실패:', findError);
+        } else {
+            const dl_id = foundDL.dl_id;
+            const alertRes = await axios.post('http://localhost:7777/alert', {
+                dl_id,
+                status
+            });
+            console.log('🔔 알림 전송 완료:', alertRes.data.message);
+        }
     }
 
     // 예약정보 조회
-    const {data: reservation, error: reservationError} = await supabase
+    const { data: reservation, error: reservationError } = await supabase
         .from('delivery')
         .select('*')
         .eq('re_num', re_num)
         .single();
 
     // 마이리스트 추가 || 상태 업데이트
-    const {data: delivery, error: deliveryError} = await supabase
+    const { data: delivery, error: deliveryError } = await supabase
         .from('deliveryList')
         .upsert({
             re_num: re_num,
@@ -158,12 +213,12 @@ router.post('/', async (req, res) => {
             driver_phone: driver_phone,
             s_time: start_time,
             f_time: finish_time,
-        }, {onConflict: 're_num'})
+        }, { onConflict: 're_num' })
 
     if (deliveryError) {
         console.log('Supabase 오류:', deliveryError);
     }
-    res.json({redirectTo: '/'});
+    res.json({ redirectTo: '/' });
 });
 
 module.exports = router;
