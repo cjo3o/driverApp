@@ -3,8 +3,12 @@ const router = express.Router();
 const supabase = require('../utils/supa');
 const moment = require('moment');
 
+router.get('/', (req, res) => {
+    res.render('alert');
+});
+
 // 알림 등록
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
     const { dl_id, status } = req.body;
 
     if (!dl_id || !status) {
@@ -42,6 +46,9 @@ router.get('/', async (req, res) => {
         if (insertError) {
             return res.status(500).json({ error: '알림 삽입 실패', detail: insertError.message });
         }
+
+        console.log('✅ 알림 삽입 성공'); 
+        console.log({ dl_id, status });
 
         // 4. 응답 반환
         return res.status(200).json({
@@ -90,6 +97,7 @@ router.get('/list', async (req, res) => {
             }
 
             groupedAlerts[label].push({
+                dl_id: alert.dl_id,
                 message: `${alert.dl_id.slice(0, 8)}···가 ${alert.status} 상태입니다.`,
                 created_at: moment(alert.created_at).format('HH:mm')
             });
@@ -99,6 +107,33 @@ router.get('/list', async (req, res) => {
     } catch (err) {
         console.error('서버 오류:', err.message);
         return res.status(500).json({ error: '서버 내부 오류', detail: err.message });
+    }
+});
+
+// /alert/detail-info?dl_id=xxxx → re_num 조회용
+router.get('/detail-info', async (req, res) => {
+    const { dl_id } = req.query;
+
+    if (!dl_id) {
+        return res.status(400).json({ error: 'dl_id가 필요합니다.' });
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from('deliveryList')
+            .select('re_num')
+            .eq('dl_id', dl_id)
+            .single();
+
+        if (error || !data) {
+            return res.status(404).json({ error: '해당 dl_id에 대한 re_num을 찾을 수 없습니다.' });
+        }
+
+        return res.status(200).json({ re_num: data.re_num });
+
+    } catch (err) {
+        console.error('❌ /alert/detail-info 서버 오류:', err.message);
+        return res.status(500).json({ error: '서버 내부 오류 발생' });
     }
 });
 

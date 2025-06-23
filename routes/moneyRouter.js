@@ -61,11 +61,16 @@ router.get('/', async (req, res) => {
     totalAmount = formatNumber(totalAmount);
     totalCount = formatNumber(totalCount);
 
-    const dailyList = Object.keys(dailyCount).map(date => ({
+    const daysInMonth = moment(`${selectedYear}-${selectedMonth}`, "YYYY-MM").daysInMonth();
+    const fullDateList = Array.from({ length: daysInMonth }, (_, i) => {
+        return moment(`${selectedYear}-${selectedMonth}-${i + 1}`, "YYYY-MM-DD").format("YYYY.MM.DD");
+    });
+
+    const dailyList = fullDateList.map(date => ({
         date,
-        count: dailyCount[date],
-        amount: dailyAmount[date]
-    }));
+        count: dailyCount[date] || 0,
+        amount: dailyAmount[date] || '0'
+    })).sort((a, b) => new Date(b.date) - new Date(a.date));
     
     // 렌더링
     res.render('money.html', {

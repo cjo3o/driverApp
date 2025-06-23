@@ -1,66 +1,85 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../utils/supa');
-const { createAlert } = require('./alertRouter'); // 알림 기록 함수
-const { sendPushToCustomer } = require('../utils/push'); // 알림 전송 함수
 const axios = require('axios');
 
-
+// /detail?re_num= 또는 /detail?dl_id=
 router.get('/', async (req, res) => {
     console.log('req.query:', req.query);
-    const { re_num } = req.query;
+    const { re_num, dl_id } = req.query;
 
     let deliveryData = null;
     let deliveryStatus = null;
     let s_time = null;
     let f_time = null;
+    let actualReNum = re_num;
 
-    if (re_num) {
-        try {
-            const { data, error } = await supabase
-                .from('delivery')
-                .select('*')
-                .eq('re_num', re_num)
+    try {
+        // dl_id만 있는 경우 → deliveryList에서 re_num 추출
+        if (!actualReNum && dl_id) {
+            const { data: dlData, error: dlError } = await supabase
+                .from('deliveryList')
+                .select('re_num')
+                .eq('dl_id', dl_id)
                 .single();
 
-            if (error) {
-                console.error('Supabase 오류:', error);
-            } else {
-                deliveryData = data;
-                deliveryStatus = data.situation;
-                console.log('배송 데이터:', deliveryData);
-                console.log('배송 상태:', deliveryStatus);
+            if (dlError || !dlData) {
+                return res.status(404).send('해당 dl_id에 대한 re_num을 찾을 수 없습니다.');
             }
-        } catch (error) {
-            console.error('서버 오류:', error);
+            actualReNum = dlData.re_num;
         }
-    }
 
-    if (deliveryStatus !== '접수') {
+        // re_num으로 delivery 조회
         const { data, error } = await supabase
-            .from('deliveryList')
+            .from('delivery')
             .select('*')
-            .eq('re_num', re_num)
+            .eq('re_num', actualReNum)
             .single();
 
-        data.s_time === null ? s_time = '-' : s_time = data.s_time.split('T')[0] + ' ' + data.s_time.split('T')[1].split(':')[0] + ':' + data.s_time.split('T')[1].split(':')[1];
-        data.f_time === null ? f_time = '-' : f_time = data.f_time.split('T')[0] + ' ' + data.f_time.split('T')[1].split(':')[0] + ':' + data.f_time.split('T')[1].split(':')[1];
-        console.log('s_time:', s_time);
-        console.log('f_time:', f_time);
-        if (error) {
-            console.error('Supabase 오류:', error);
+        if (error || !data) {
+            return res.status(404).send('해당 re_num의 배송 정보를 찾을 수 없습니다.');
         }
-    }
 
-    res.render('detail', {
-        title: '상세보기',
-        deliveryData,
-        user: req.session.user,
-        s_time,
-        f_time
-    });
+        deliveryData = data;
+        deliveryStatus = data.situation;
+
+        // 접수 상태 아니면 deliveryList 조회해서 시간 파싱
+        if (deliveryStatus !== '접수') {
+            const { data: listData, error: listError } = await supabase
+                .from('deliveryList')
+                .select('*')
+                .eq('re_num', actualReNum)
+                .single();
+
+            if (listError || !listData) {
+                console.error('deliveryList 조회 실패:', listError);
+            } else {
+                const format = (isoStr) => {
+                    if (!isoStr) return '-';
+                    const [date, time] = isoStr.split('T');
+                    const [h, m] = time.split(':');
+                    return `${date} ${h}:${m}`;
+                };
+                s_time = format(listData.s_time);
+                f_time = format(listData.f_time);
+            }
+        }
+
+        res.render('detail', {
+            title: '상세보기',
+            deliveryData,
+            user: req.session.user,
+            s_time,
+            f_time
+        });
+
+    } catch (error) {
+        console.error('서버 오류:', error.message);
+        res.status(500).send('서버 내부 오류 발생');
+    }
 });
 
+// 상태 변경 및 마이리스트 추가
 router.post('/', async (req, res) => {
     const {
         re_num,
@@ -74,151 +93,91 @@ router.post('/', async (req, res) => {
     } = req.body;
 
     console.log('img_url:', img_url);
-    if (status === '접수') {
-        const { data, error } = await supabase
-            .from('delivery')
-            .update({
-                situation: '배송대기'
-            })
-            .eq('re_num', re_num)
-            .single();
 
-        const { data: statLogs, error: logError } = await supabase
-            .from('status_logs')
-            .insert({
-                table_name: "delivery",
-                key_value: re_num,
-                prev_status: status,
-                new_status: "배송대기",
-                updated_at: new Date().toISOString(),
-                operator: driver_name,
-            });
+    let nextStatus = '';
+    if (status === '접수') nextStatus = '배송대기';
+    else if (status === '배송대기') nextStatus = '배송중';
+    else if (status === '배송중') nextStatus = '배송완료';
 
-        // 알림 전송
-        const { data: foundDL, error: findError } = await supabase
-            .from('deliveryList')
-            .select('dl_id')
-            .eq('re_num', re_num)
-            .single();
-
-        if (findError || !foundDL) {
-            console.error('deliveryList에서 dl_id 조회 실패:', findError);
-        } else {
-            const dl_id = foundDL.dl_id;
-            const alertRes = await axios.post('http://localhost:7777/alert', {
-                dl_id,
-                status
-            });
-            console.log('🔔 알림 전송 완료:', alertRes.data.message);
-        }
-
-    } else if (status === '배송대기') {
-        const { data, error } = await supabase
-            .from('delivery')
-            .update({
-                situation: '배송중'
-            })
-            .eq('re_num', re_num)
-            .single();
-
-        const { data: statLogs, error: logError } = await supabase
-            .from('status_logs')
-            .insert({
-                table_name: "delivery",
-                key_value: re_num,
-                prev_status: status,
-                new_status: "배송중",
-                updated_at: new Date().toISOString(),
-                operator: driver_name,
-            });
-        // 알림 전송
-        const { data: foundDL, error: findError } = await supabase
-            .from('deliveryList')
-            .select('dl_id')
-            .eq('re_num', re_num)
-            .single();
-
-        if (findError || !foundDL) {
-            console.error('deliveryList에서 dl_id 조회 실패:', findError);
-        } else {
-            const dl_id = foundDL.dl_id;
-            const alertRes = await axios.post('http://localhost:7777/alert', {
-                dl_id,
-                status
-            });
-            console.log('🔔 알림 전송 완료:', alertRes.data.message);
-        }
-
-    } else if (status === '배송중') {
-        const { data, error } = await supabase
-            .from('delivery')
-            .update({
-                situation: '배송완료'
-            })
-            .eq('re_num', re_num)
-            .single();
-
-        const { data: statLogs, error: logError } = await supabase
-            .from('status_logs')
-            .insert({
-                table_name: "delivery",
-                key_value: re_num,
-                prev_status: status,
-                new_status: "배송완료",
-                updated_at: new Date().toISOString(),
-                operator: driver_name,
-            });
-        // 알림 전송
-        const { data: foundDL, error: findError } = await supabase
-            .from('deliveryList')
-            .select('dl_id')
-            .eq('re_num', re_num)
-            .single();
-
-        if (findError || !foundDL) {
-            console.error('deliveryList에서 dl_id 조회 실패:', findError);
-        } else {
-            const dl_id = foundDL.dl_id;
-            const alertRes = await axios.post('http://localhost:7777/alert', {
-                dl_id,
-                status
-            });
-            console.log('🔔 알림 전송 완료:', alertRes.data.message);
-        }
+    if (!nextStatus) {
+        return res.status(400).json({ error: '올바르지 않은 상태입니다.' });
     }
 
-    // 예약정보 조회
-    const { data: reservation, error: reservationError } = await supabase
+        // 배송 상태 업데이트
+        await supabase
         .from('delivery')
-        .select('*')
+        .update({ situation: nextStatus })
         .eq('re_num', re_num)
         .single();
 
-    // 마이리스트 추가 || 상태 업데이트
-    const { data: delivery, error: deliveryError } = await supabase
-        .from('deliveryList')
-        .upsert({
-            re_num: re_num,
-            driver_id: driver_id,
-            status: reservation.situation,
-            delivery_date: reservation.delivery_date,
-            delivery_start: reservation.delivery_start,
-            delivery_arrive: reservation.delivery_arrive,
-            price: reservation.price,
-            under: reservation.under,
-            over: reservation.over,
-            customer_name: reservation.name,
-            customer_phone: reservation.phone,
-            driver_name: driver_name,
-            driver_phone: driver_phone,
-            s_time: start_time,
-            f_time: finish_time,
-        }, { onConflict: 're_num' })
+        // 상태 로그 저장장
+        await supabase
+            .from('status_logs')
+            .insert({
+                table_name: "delivery",
+                key_value: re_num,
+                prev_status: status,
+                new_status: nextStatus,
+                updated_at: new Date().toISOString(),
+                operator: driver_name,
+            });
 
-    if (deliveryError) {
-        console.log('Supabase 오류:', deliveryError);
-    }
-    res.json({ redirectTo: '/' });
+        // 마이리스트 upsert
+        const { data: reservation } = await supabase
+            .from('delivery')
+            .select('*')
+            .eq('re_num', re_num)
+            .single();
+
+        const { error: deliveryError } = await supabase
+            .from('deliveryList')
+            .upsert({
+                re_num: re_num,
+                driver_id,
+                status: reservation.situation,
+                delivery_date: reservation.delivery_date,
+                delivery_start: reservation.delivery_start,
+                delivery_arrive: reservation.delivery_arrive,
+                price: reservation.price,
+                under: reservation.under,
+                over: reservation.over,
+                customer_name: reservation.name,
+                customer_phone: reservation.phone,
+                driver_name,
+                driver_phone,
+                s_time: start_time,
+                f_time: finish_time,
+            }, { onConflict: 're_num' });
+
+        if (deliveryError) {
+            console.log('Supabase 오류:', deliveryError);
+        }
+
+                // 알림 전송
+                const { data: foundDL, error: findError } = await supabase
+                    .from('deliveryList')
+                    .select('dl_id')
+                    .eq('re_num', re_num)
+                    .limit(1)
+                    .maybeSingle();
+        
+                if (findError || !foundDL) {
+                    console.error('deliveryList에서 dl_id를 찾을 수 없습니다.');
+                } else {
+                    const dl_id = foundDL.dl_id;
+                    try {
+                        console.log('📡 /alert POST 요청 보냄:', dl_id, nextStatus);
+                        const alertRes = await axios.post('http://localhost:7777/alert', {
+                            dl_id,
+                            status: nextStatus
+                        });
+                        console.log('✅ 알림 전송 성공:', alertRes.data.message);
+                    } catch (err) {
+                        console.error('❌ 알림 전송 실패:', err.message);
+                    }
+                }
+
+        res.json({ redirectTo: '/' });
 });
 
 module.exports = router;

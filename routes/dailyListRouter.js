@@ -19,8 +19,6 @@ router.get('/detail', async (req, res) => {
     const queryDate = selectedDate.replace(/\./g, '-'); // '2025-06-17'
     const nextDate = moment(queryDate).add(1, 'days').format('YYYY-MM-DD'); 
     const driverId = user.id;
-    let s_time = null;
-    let f_time = null;
 
     const { data, error } = await supabase
         .from('deliveryList')
@@ -52,6 +50,8 @@ router.get('/detail', async (req, res) => {
             f_time_formatted: formatTime(item.f_time),
         }));
 
+        formattedList.sort((a, b) => new Date(b.f_time) - new Date(a.f_time));
+
     if (error || !Array.isArray(data)) {
         console.error('❗ Supabase 조회 에러:', error?.message || error);
         return res.status(500).send('배송 데이터를 불러올 수 없습니다.');
@@ -60,8 +60,8 @@ router.get('/detail', async (req, res) => {
     res.render('dailyList.html', {
         title: `${selectedDate} 배송 상세`,
         selectedDate,
-        deliveryList: formattedList,
-    });
+        deliveryList: formattedList
+      });
 });
 
 module.exports = router;
