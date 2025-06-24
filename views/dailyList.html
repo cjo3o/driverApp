@@ -1,12 +1,12 @@
 {% extends 'layout.html' %}
 {% block content %}
 
-<div class="px-[4vw] py-[2vh]">
+<div class="px-[4vw] py-[4vh]">
   <h2 class="text-xl font-bold mb-[2vw] text-center">
     {{ selectedDate }} 배송 내역
   </h2>
 
-  <div class="list h-full max-h-[70vh] flex flex-col gap-[3vw] overflow-y-auto">
+  <div class="list h-full max-h-[80vh] flex flex-col gap-[3vw] overflow-y-auto">
     {% for item in deliveryList %}
     <div class="card p-[1vw] bg-white rounded-[3.5vw] shadow cursor-pointer"
          data-dl-id="{{ item.dl_id }}">

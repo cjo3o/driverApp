@@ -2,34 +2,36 @@
 {% block style %}
 {% endblock %}
 {% block content %}
-<div class="container">
+<div class="container bg-gray-800 z-0">
     <!-- title -->
     <div class="title text-end px-[7vw] py-[2vw]">
-            <h1 class="text-[7vw] text-right">{{user.name}} 기사님의</h1>
-            <h1 class="text-[7vw] text-right">이달의 총 정산금액은</h1>
-            <h1 class="text-[7vw] text-right">{{totalAmount | default(0)}}원 입니다.</h1>
+        <h1 class="text-[7vw] text-right">{{user.name}} 기사님의</h1>
+        <h1 class="text-[7vw] text-right">이달의 총 정산금액은</h1>
+        <h1 class="text-[7vw] text-right">{{totalAmount | default(0)}}원 입니다.</h1>
     </div>
     <!-- Middle -->
-    <div class="middle absolute left-1/2 -translate-x-1/2 top-[50vw] px-[8vw] py-[2vw]
-    flex justify-around bg-white rounded-xl shadow-lg w-[85vw] min-h-[16vw] items-center">
-        <button class="bg-transparent border-none cursor-pointer" type="button" onclick="prev()">
-            <img src="/public/icons/prev.png" alt="prev" class="w-[7vw] h-[7vw]">
-        </button>
-        <div class="totaldata">
-            <div class="flex justify-center">
-                <p class="text-[7vw] font-bold text-black text-center">{{selectedMonth}}월</p>
-            </div>
-            <div class="flex justify-between">
-                <p class="text-[7vw] font-bold text-black text-center">TOTAL <span class="text-purple-600">{{totalCount | default(0)}}</span></p>
-            </div>
-        </div>
-        <button class="bg-transparent border-none cursor-pointer" type="button" onclick="next()">
-            <img src="/public/icons/next.png" alt="next" class="w-[7vw] h-[7vw]">
-        </button>
-    </div>
+
 
     <!-- list -->
-    <div class=" bg-white px-[10vw] pt-[25vw] pb-[15vw]">
+    <div class=" bg-white px-[7vw] py-[10vh] mt-[7vh] relative">
+        <div class="middle absolute top-0 translate-y-[-50%] px-[8vw] py-[2vw]
+    flex justify-around bg-white rounded-xl shadow-lg w-[85vw] min-h-[16vw] items-center">
+            <button class="bg-transparent border-none cursor-pointer" type="button" onclick="prev()">
+                <img src="/public/icons/prev.png" alt="prev" class="w-[7vw] h-[7vw]">
+            </button>
+            <div class="totaldata">
+                <div class="flex justify-center">
+                    <p class="text-[7vw] font-bold text-black text-center">{{selectedMonth}}월</p>
+                </div>
+                <div class="flex justify-between">
+                    <p class="text-[7vw] font-bold text-black text-center">TOTAL <span
+                            class="text-purple-600">{{totalCount | default(0)}}</span></p>
+                </div>
+            </div>
+            <button class="bg-transparent border-none cursor-pointer" type="button" onclick="next()">
+                <img src="/public/icons/next.png" alt="next" class="w-[7vw] h-[7vw]">
+            </button>
+        </div>
         <div class="grid grid-cols-4 text-[4vw] text-black border-b-[0.5vw] border-dotted border-black pb-[2vw]">
             <div class="text-left">날짜</div>
             <div class="text-right">건수</div>
@@ -40,22 +42,22 @@
         <!-- List Content -->
         <div class="overflow-y-auto max-h-[47vh]">
             {% if dailyList and dailyList | length > 0 %}
-                {% for day in dailyList %}
-                <div class="grid grid-cols-4 text-[4vw] text-black py-[2vw]">
-                    <div>{{ day.date }}</div>
-                    <div class="text-right">{{ day.count }}</div>
-                    <div class="text-right">{{ day.amount | default(0) }}</div>
-                    <div class="text-center">
-                        <a href="/daily/detail?date={{ day.date }}">
-                            <img src="/public/icons/bluearrow.png" alt="상세" class="w-[4vw] h-[4vw] inline-block" />
-                        </a>
-                    </div>
+            {% for day in dailyList %}
+            <div class="grid grid-cols-4 text-[4vw] text-black py-[2vw]">
+                <div>{{ day.date }}</div>
+                <div class="text-right">{{ day.count }}</div>
+                <div class="text-right">{{ day.amount | default(0) }}</div>
+                <div class="text-end">
+                    <a href="/daily/detail?date={{ day.date }}">
+                        <img src="/public/icons/bluearrow.png" alt="상세" class="w-[4vw] h-[4vw] inline-block" />
+                    </a>
                 </div>
-                {% endfor %}
+            </div>
+            {% endfor %}
             {% else %}
-                <p class="text-center text-[4vw] text-gray-500 mt-[4vw]">
-                    이 달의 배송 데이터가 없습니다.
-                </p>
+            <p class="text-center text-[4vw] text-gray-500 mt-[4vw]">
+                이 달의 배송 데이터가 없습니다.
+            </p>
             {% endif %}
         </div>
     </div>

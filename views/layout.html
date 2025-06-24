@@ -11,8 +11,8 @@
     {% block style %}
     {% endblock %}
 </head>
-<body class="m-0 p-0 bg-gray-800 text-white">
-    <div class="flex justify-between items-center p-[2vw] border-b border-white fixed w-full z-10000">
+<body class="m-0 p-0 bg-gray-800 h-screen relative text-white">
+    <div class="flex bg-gray-800 justify-between items-center p-[2vw] border-b border-white sticky top-0 z-10000">
         <button class="backBtn bg-transparent border-none cursor-pointer" type="button" onclick="back()">
             <img src="/public/icons/backward.png" alt="back" class="w-[5vw] h-[5vw]">
         </button>
@@ -24,7 +24,7 @@
     {% block content %}
     {% endblock %}
     <div
-        class="fixed bg-gray-800 bottom-0 w-full p-[2vw] flex justify-around items-center text-center border-t border-white">
+        class="fixed h-[8vh] bottom-0 bg-gray-800 w-full p-[2vw] flex justify-around items-center text-center border-t border-white">
         <a class="flex flex-col items-center justify-center text-white no-underline" href="/alert">
             <img src="/public/icons/bell.png" alt="alert" class="w-[5vw] h-[5vw] mx-auto">
             <p class="m-0 text-white text-[3vw]">알림</p>
