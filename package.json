@@ -36,6 +36,7 @@
     "nunjucks": "^3.2.4",
     "sequelize": "^6.37.7",
     "sequelize-cli": "^6.6.3",
-    "tailwindcss": "^4.1.10"
+    "tailwindcss": "^4.1.10",
+    "web-push": "^3.6.7"
   }
 }
