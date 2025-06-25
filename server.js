@@ -47,7 +47,7 @@ app.post("/send-push", async (req, res) => {
     }
   
     const subscription = data.subscription;
-
+console.log("🔥 subscription:", subscription);
   // ② 푸시 발송
   try {
     await webpush.sendNotification(subscription, JSON.stringify({ title, body }));
