@@ -8,17 +8,21 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="manifest" href="/manifest.json?v=2">
+    <meta name="theme-color" content="#1976d2">
+    <link rel="icon" href="/favicon.ico">
+    <script src="/app.js?v=2"></script>
     {% block style %}
     {% endblock %}
 </head>
 <body class="m-0 p-0 bg-gray-800 h-screen relative text-white">
     <div class="flex bg-gray-800 justify-between items-center p-[2vw] border-b border-white sticky top-0 z-10000">
         <button class="backBtn bg-transparent border-none cursor-pointer" type="button" onclick="back()">
-            <img src="/public/icons/backward.png" alt="back" class="w-[5vw] h-[5vw]">
+            <img src="/icons/backward.png" alt="back" class="w-[5vw] h-[5vw]">
         </button>
         <a class="flex-grow text-center text-[5vw] font-bold text-white no-underline" href="/">WITH GO</a>
         <button class="bg-transparent border-none cursor-pointer" type="button" onclick="logout()">
-            <img src="/public/icons/logout.png" alt="logout" class="w-[5vw] h-[5vw]">
+            <img src="/icons/logout.png" alt="logout" class="w-[5vw] h-[5vw]">
         </button>
     </div>
     {% block content %}
@@ -26,15 +30,15 @@
     <div
         class="fixed h-[8vh] bottom-0 bg-gray-800 w-full p-[2vw] flex justify-around items-center text-center border-t border-white">
         <a class="flex flex-col items-center justify-center text-white no-underline" href="/alert">
-            <img src="/public/icons/bell.png" alt="alert" class="w-[5vw] h-[5vw] mx-auto">
+            <img src="/icons/bell.png" alt="alert" class="w-[5vw] h-[5vw] mx-auto">
             <p class="m-0 text-white text-[3vw]">알림</p>
         </a>
         <a class="flex flex-col items-center justify-center text-white no-underline" href="/">
-            <img src="/public/icons/home.png" alt="home" class="w-[5vw] h-[5vw] mx-auto">
+            <img src="/icons/home.png" alt="home" class="w-[5vw] h-[5vw] mx-auto">
             <p class="m-0 text-white text-[3vw]">홈</p>
         </a>
         <a class="flex flex-col items-center justify-center text-white no-underline" href="/money">
-            <img src="/public/icons/money.png" alt="money" class="w-[5vw] h-[5vw] mx-auto">
+            <img src="/icons/money.png" alt="money" class="w-[5vw] h-[5vw] mx-auto">
             <p class="m-0 text-white text-[3vw]">정산</p>
         </a>
     </div>
