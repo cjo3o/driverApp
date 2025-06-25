@@ -15,7 +15,8 @@
         phone: '{{deliveryData.phone}}',
         price: '{{deliveryData.price.toLocaleString()}}',
         under: Number('{{deliveryData.under}}'),
-        over: Number('{{deliveryData.over}}')
+        over: Number('{{deliveryData.over}}'),
+        photo_url: '{{dl_photo}}'
     };
     window.user = {
         id: '{{user.id}}',
@@ -71,6 +72,14 @@
             <input type="file" id="img_upload" accept="image/*" class="hidden">
             <label for="img_upload" class="text-[4.5vw] bg-gray-200 rounded-[4vw] p-[3vw]">사진 선택</label>
             <img src="" alt="배송 사진" class="preview hidden object-contain">
+            {% endif %}
+            {% if deliveryData.situation === '배송완료' %}
+            <img id="delivery-photo" src="{{dl_photo}}" alt="배송 사진" class="w-full h-full object-contain">
+            <!-- 다운로드 버튼: a 태그 방식 -->
+            <a id="download-btn" href="{{dl_photo}}" download="delivery_photo.jpg"
+               class="block mt-4 bg-blue-500 text-white text-center py-2 rounded">사진 저장</a>
+            <!-- 다운로드 버튼: JS 방식 (모바일 호환성 보완) -->
+            <button id="save-photo-btn" class="block mt-2 bg-green-500 text-white text-center py-2 rounded w-full">사진 저장(호환)</button>
             {% endif %}
         </div>
     </div>
@@ -179,5 +188,21 @@
         submitBtn.classList.add('bg-gray-400');
         submitBtn.classList.remove('hover:bg-[#8b3dff]');
     }
+
+    // 사진 저장 JS (모바일 호환성 보완)
+    document.addEventListener('DOMContentLoaded', function() {
+        const saveBtn = document.getElementById('save-photo-btn');
+        const img = document.getElementById('delivery-photo');
+        if(saveBtn && img) {
+            saveBtn.addEventListener('click', function() {
+                const link = document.createElement('a');
+                link.href = img.src;
+                link.download = 'delivery_photo.jpg';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+    });
 </script>
 {% endblock %}

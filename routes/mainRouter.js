@@ -18,7 +18,8 @@ router.get('/', async (req, res, next) => {
         const { data, error } = await supabase
             .from('delivery')
             .select('*')
-            .eq('situation', '접수');
+            .eq('situation', '접수')
+            .order('delivery_date', { ascending: true });
         resData = data;
         console.log(resData);
     } catch (error) {
