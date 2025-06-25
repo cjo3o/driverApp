@@ -23,7 +23,7 @@ app.use(expressSession({
     name: "session-cookie",
 }));
 
-app.set('port', 7700);
+app.set('port', 7777);
 app.set('view engine', 'html');
 app.set('views', path.join(__dirname, 'views'));
 

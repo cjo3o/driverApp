@@ -60,7 +60,7 @@ console.log("🔥 subscription:", subscription);
 });
 
 // 4️⃣ 서버 실행
-const PORT = process.env.PORT || 7777;
+const PORT = process.env.PORT || 5555;
 app.listen(PORT, () => {
   console.log(`🚀 푸시 서버 실행 중: http://localhost:${PORT}`);
 });
