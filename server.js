@@ -17,8 +17,8 @@ app.use(expressSession({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        httpOnly: true,
-        secure: true,
+        httpOnly: false,
+        secure: false,
     },
     name: "session-cookie",
 }));
