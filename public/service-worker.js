@@ -33,6 +33,10 @@ self.addEventListener('install', event => {
 // 요청 가로채기
 self.addEventListener('fetch', event => {
   event.respondWith(
+    fetch(event.request, {
+      redirect: 'follow',
+    }),
+
     caches.match(event.request).then(response => {
       return response || fetch(event.request);
     })
