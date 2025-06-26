@@ -1,9 +1,8 @@
 {
   "name": "withGo 기사 앱",
   "short_name": "Driver",
-  "start_url": "/login",
+  "start_url": "/",
   "display": "standalone",
-  "scope": "/",
   "background_color": "#ffffff",
   "theme_color": "#1976d2",
   "icons": [
