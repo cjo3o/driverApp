@@ -1,7 +1,6 @@
 const CACHE_NAME = "driver-app-cache-v1";
 const urlsToCache = [
   "/",
-  "/login",
   "/alert",
   // 로그인 없는 경로만 우선 캐시
   "/app.js",
