@@ -1,6 +1,11 @@
 const CACHE_NAME = "driver-app-cache-v1";
 const urlsToCache = [
   "/",
+  "/login",
+  "/alert",
+  "/money",
+  "/dailyList",
+  "/detail",
   "/app.js",
   "/manifest.json",
   "/icons/home.png",
