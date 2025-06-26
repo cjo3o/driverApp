@@ -4,7 +4,13 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
 const path = require('path');
-
+const webpush = require('web-push');
+require('dotenv').config();
+webpush.setVapidDetails(
+    'mailto:kimyoott@naver.com',
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+);
 const app = express();
 
 app.use(logger('dev'));
@@ -34,13 +40,19 @@ nunjucks.configure('views', {
     watch: true,
 });
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 const mainRouter = require('./routes/mainRouter.js');
 const loginRouter = require('./routes/loginRouter.js');
 const alertRouter = require('./routes/alertRouter.js');
 const moneyRouter = require('./routes/moneyRouter.js');
 const dailyListRouter = require('./routes/dailyListRouter.js');
 const detailRouter = require('./routes/detailRouter.js');
-
+app.use((req,res,next)=>{
+    console.log("미들웨어 실행 되는거 맞음?");
+    next();
+});
 app.use('/', mainRouter);
 app.use('/login', loginRouter);
 app.use('/alert', alertRouter);

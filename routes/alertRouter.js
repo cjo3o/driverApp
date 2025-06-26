@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const supabase = require('../utils/supa');
 const moment = require('moment');
+const webpush = require("web-push");
 
 router.get('/', (req, res) => {
     res.render('alert');
@@ -16,7 +17,7 @@ router.post('/', async (req, res) => {
     }
 
     try {
-        // 1. deliveryList에서 re_num 조회
+        // 1-1. deliveryList에서 re_num 조회
         const { data: deliveryList, error: dlError } = await supabase
             .from('deliveryList')
             .select('re_num')
@@ -27,42 +28,85 @@ router.post('/', async (req, res) => {
             return res.status(404).json({ error: 'deliveryList에서 re_num 조회 실패' });
         }
 
+
+        //1-2. delivery에서 user_id 조회
+        const { data: delivery, error: dError } = await supabase
+        .from("delivery")
+        .select("user_id")
+        .eq("re_num", re_num)
+        .single();
+      if (dError || !delivery) {
+        return res.status(404).json({ error: "user_id 조회 실패" });
+      }
+
         const re_num = deliveryList.re_num;
 
         // 2. 알림 메시지 생성 (앞 8글자만 + ···)
+        const user_id = deliveryList.user_id;
         const shortReNum = re_num.slice(0, 8);
         const message = `${shortReNum}···가 ${status} 상태입니다.`;
 
         // 3. alerts 테이블에 삽입
-        const { error: insertError } = await supabase
-            .from('alerts')
-            .insert({
-                dl_id,
-                status,
-                created_at: new Date().toISOString(),
-                update_at: new Date().toISOString()
+        await supabase.from("alerts").insert({
+            dl_id,
+            status,
+            created_at: new Date().toISOString(),
+            update_at: new Date().toISOString()
+          });
+      
+          // 4. subscription에서 해당 user_id의 푸시 구독 정보 조회
+          const { data: subscriptions, error: subError } = await supabase
+            .from("subscription")
+            .select("subscription")
+            .eq("user_id", user_id);
+      
+          if (subError || !subscriptions || subscriptions.length === 0) {
+            return res.status(200).json({
+              message: "알림 기록은 성공했으나, 해당 user_id의 푸시 구독 정보가 없습니다.",
             });
-
-        if (insertError) {
-            return res.status(500).json({ error: '알림 삽입 실패', detail: insertError.message });
-        }
-
-        console.log('✅ 알림 삽입 성공'); 
-        console.log({ dl_id, status });
-
-        // 4. 응답 반환
-        return res.status(200).json({
+          }
+      
+          const payload = JSON.stringify({
+            title: "짐보관 배송 상태 알림",
+            body: message,
+          });
+      
+          // 5. 알림 전송
+          const results = await Promise.allSettled(
+            subscriptions.map((s, idx) => {
+              let subObj = s.subscription;
+              try {
+                if (typeof subObj === "string") {
+                  subObj = JSON.parse(subObj);
+                  if (typeof subObj === "string") {
+                    subObj = JSON.parse(subObj);
+                  }
+                }
+              } catch (e) {
+                console.error(`❌ [${idx}] JSON 파싱 실패`, e);
+                return Promise.reject(e);
+              }
+      
+              return webpush.sendNotification(subObj, payload)
+                .then(() => console.log(`✅ [${idx}] 푸시 전송 성공`))
+                .catch((err) => {
+                  console.error(`🚨 [${idx}] 푸시 전송 실패`, err);
+                  return Promise.reject(err);
+                });
+            })
+          );
+      
+          return res.status(200).json({
             success: true,
-            re_num,
-            shortReNum,
-            message
-        });
-
-    } catch (err) {
-        console.error('서버 오류:', err.message);
-        return res.status(500).json({ error: '서버 내부 오류', detail: err.message });
-    }
-});
+            message: "알림 기록 및 푸시 전송 완료",
+            results,
+          });
+      
+        } catch (err) {
+          console.error("❌ 서버 오류:", err.message);
+          return res.status(500).json({ error: "서버 내부 오류", detail: err.message });
+        }
+      });
 
 // 알림 리스트 조회
 router.get('/list', async (req, res) => {
@@ -136,5 +180,51 @@ router.get('/detail-info', async (req, res) => {
         return res.status(500).json({ error: '서버 내부 오류 발생' });
     }
 });
+
+// test postman용 send
+router.post("/send", async (req, res) => {
+    const { title, body, url } = req.body;
+    const payload = JSON.stringify({ title, body, url });
+  
+    const { data: subscribers, error } = await supabase
+        .from("subscription")
+        .select("*");
+    console.log("알람 송신 전 조회 결과 : ",subscribers);
+    if (error) {
+      console.error("❌ Supabase SELECT 실패", error);
+      return res.status(500).json({ error: error.message });
+    }
+  
+    if (!subscribers || subscribers.length === 0) {
+      return res.status(400).json({ error: "등록된 구독 정보가 없습니다." });
+    }
+  
+    const results = await Promise.allSettled(
+        subscribers.map((s, idx) => {
+          let subObj = s.subscription;
+            console.log("subObj",subObj);
+          try {
+            if (typeof subObj === "string") {
+              subObj = JSON.parse(subObj);
+              if (typeof subObj === "string") {
+                subObj = JSON.parse(subObj);
+              }
+            }
+          } catch (e) {
+            console.error(`❌ [${idx}] JSON 파싱 실패:`, e);
+            return Promise.reject(e);
+          }
+  
+          return webpush.sendNotification(subObj, payload).then(res=>console.log("알림전송성공:",res)).catch((err) => {
+            console.error(`🚨 [${idx}] 푸시 전송 실패:`, err);
+            return Promise.reject(err);
+          });
+        })
+    );
+  
+    console.log("✅ 푸시 전송 결과:", results);
+  
+    res.status(200).json({ message: "알림 전송 완료", results });
+  });
 
 module.exports = router;
