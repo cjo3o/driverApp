@@ -25,9 +25,11 @@ router.post('/', async (req, res) => {
             .single();
 
         if (dlError || !deliveryList) {
+            console.error('❌ re_num 조회 실패:', dlError?.message || '데이터 없음');
             return res.status(404).json({ error: 'deliveryList에서 re_num 조회 실패' });
         }
 
+        const re_num = deliveryList.re_num;
 
         //1-2. delivery에서 user_id 조회
         const { data: delivery, error: dError } = await supabase
@@ -39,10 +41,9 @@ router.post('/', async (req, res) => {
         return res.status(404).json({ error: "user_id 조회 실패" });
       }
 
-        const re_num = deliveryList.re_num;
+        const user_id = delivery.user_id;
 
         // 2. 알림 메시지 생성 (앞 8글자만 + ···)
-        const user_id = deliveryList.user_id;
         const shortReNum = re_num.slice(0, 8);
         const message = `${shortReNum}···가 ${status} 상태입니다.`;
 

@@ -9,14 +9,12 @@ const webpush = require('web-push');
 require('dotenv').config();
 
 const app = express();
-app.use(express.json());
 
 webpush.setVapidDetails(
     'mailto:kimyoott@naver.com',
     process.env.VAPID_PUBLIC_KEY,
     process.env.VAPID_PRIVATE_KEY
 );
-const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
