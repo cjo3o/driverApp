@@ -236,6 +236,12 @@
     const mainContainer = document.querySelector('.main_container');
     const bodyContainer = document.querySelector('.body_container');
 
+    // main.html 내부 스크립트에서
+    if (!window.user) {
+        window.location.href = '/login';
+    }
+
+
     // if (navigator.geolocation) {
     //     navigator.geolocation.getCurrentPosition(
     //         function (position) {
