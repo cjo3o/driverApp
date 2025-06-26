@@ -1,0 +1,88 @@
+{% extends 'layout.html' %}
+{% block style %}
+{% endblock %}
+{% block content %}
+<div class="px-[4vw] py-[2vh] pb-[10vh]">
+    <div class="top text-xl font-bold mb-[2vw] text-center">
+        <h1>알림 LIST</h1>
+    </div>
+    <!-- alert list -->
+    <div id="alert-container" class="space-y-[4vw]"></div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    let lastFetched = '';
+
+    async function fetchAlertsAndRender() {
+        const container = document.getElementById('alert-container');
+
+        try {
+            const res = await fetch('/alert/list');
+            const alertData = await res.json();
+            const serialized = JSON.stringify(alertData);
+
+            if (serialized === lastFetched) return;
+            lastFetched = serialized;
+            container.innerHTML = '';
+
+            Object.keys(alertData).forEach(dateKey => {
+                // 날짜 라벨
+                const dateLabel = document.createElement('div');
+                dateLabel.className = 'text-[4vw] font-semibold text-white';
+                dateLabel.textContent = dateKey;
+                container.appendChild(dateLabel);
+
+                // 알림 카드
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-[3.5vw] p-[4vw] text-[4vw] shadow text-gray-800 space-y-[1vw]';
+
+                alertData[dateKey].forEach(alert => {
+                    const row = document.createElement('div');
+                    row.className = 'flex justify-between cursor-pointer hover:bg-gray-100 px-2 py-1 rounded';
+
+                    const message = document.createElement('div');
+                    message.textContent = alert.message;
+
+                    const time = document.createElement('div');
+                    time.className = 'text-[3.2vw] text-right text-gray-500';
+                    time.textContent = alert.created_at;
+
+                    row.appendChild(message);
+                    row.appendChild(time);
+
+                    // 클릭 시 상세 페이지 이동
+                    row.addEventListener('click', async () => {
+                        try {
+                            const dlId = alert.dl_id;
+                            const res = await fetch(`/alert/detail-info?dl_id=${dlId}`);
+                            const data = await res.json();
+
+                            if (data && data.re_num) {
+                                window.location.href = `/detail?re_num=${data.re_num}`;
+                            } else {
+                                alert('상세 정보를 불러올 수 없습니다.');
+                            }
+                        } catch (err) {
+                            console.error('❌ 상세정보 fetch 실패:', err);
+                            alert('에러가 발생했습니다.');
+                        }
+                    });
+
+                    card.appendChild(row);
+                });
+
+                container.appendChild(card);
+            });
+        } catch (err) {
+            console.error('🚨 알림 불러오기 실패:', err);
+            container.innerHTML = '<p class="text-red-500">알림을 불러오지 못했습니다.</p>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchAlertsAndRender();             // 최초 렌더링
+        setInterval(fetchAlertsAndRender, 5000); // 실시간 갱신
+    });
+</script>
+{% endblock %}

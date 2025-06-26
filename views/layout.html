@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>{{title}}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="manifest" href="/manifest.json?v=2">
+    <meta name="theme-color" content="#1976d2">
+    <link rel="icon" href="/favicon.ico">
+    <script src="/app.js?v=2"></script>
+    {% block style %}
+    {% endblock %}
+</head>
+<body class="m-0 p-0 bg-gray-800 h-screen relative text-white">
+    <div class="flex bg-gray-800 justify-between items-center p-[2vw] border-b border-white sticky top-0 z-10000">
+        <button class="backBtn bg-transparent border-none cursor-pointer" type="button" onclick="back()">
+            <img src="/icons/backward.png" alt="back" class="w-[5vw] h-[5vw]">
+        </button>
+        <a class="flex-grow text-center text-[5vw] font-bold text-white no-underline" href="/">WITH GO</a>
+        <button class="bg-transparent border-none cursor-pointer" type="button" onclick="logout()">
+            <img src="/icons/logout.png" alt="logout" class="w-[5vw] h-[5vw]">
+        </button>
+    </div>
+    {% block content %}
+    {% endblock %}
+    <div
+        class="fixed h-[8vh] bottom-0 bg-gray-800 w-full p-[2vw] flex justify-around items-center text-center border-t border-white">
+        <a class="flex flex-col items-center justify-center text-white no-underline" href="/alert">
+            <img src="/icons/bell.png" alt="alert" class="w-[5vw] h-[5vw] mx-auto">
+            <p class="m-0 text-white text-[3vw]">알림</p>
+        </a>
+        <a class="flex flex-col items-center justify-center text-white no-underline" href="/">
+            <img src="/icons/home.png" alt="home" class="w-[5vw] h-[5vw] mx-auto">
+            <p class="m-0 text-white text-[3vw]">홈</p>
+        </a>
+        <a class="flex flex-col items-center justify-center text-white no-underline" href="/money">
+            <img src="/icons/money.png" alt="money" class="w-[5vw] h-[5vw] mx-auto">
+            <p class="m-0 text-white text-[3vw]">정산</p>
+        </a>
+    </div>
+
+<script>
+    const backBtn = document.querySelector('.backBtn');
+
+    if (window.location.pathname === '/' || window.location.pathname === '/main') {
+        backBtn.classList.add('opacity-0');
+    }
+
+    function back() {
+        // 로그인 후 메인 페이지에서 뒤로가기를 막기 위해
+        // 현재 페이지가 메인 페이지이고, 이전 페이지가 로그인 페이지인 경우 홈으로 이동
+        if (window.location.pathname === '/' || window.location.pathname === '/main') {
+            // 메인 페이지에서는 뒤로가기를 막고 홈에 머무름
+            return;
+        } else {
+            // 다른 페이지에서는 이전 페이지로 이동
+            window.history.back();
+        }
+    }
+
+    function logout() {
+        window.location.href = '/login/logout'; // 실제 경로에 맞게
+    }
+</script>
+{% block script %}
+{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="px-[4vw] py-[4vh]">
+  <h2 class="text-xl font-bold mb-[2vw] text-center">
+    {{ selectedDate }} 배송 내역
+  </h2>
+
+  <div class="list h-full max-h-[80vh] flex flex-col gap-[3vw] overflow-y-auto">
+    {% for item in deliveryList %}
+    <div class="card p-[1vw] bg-white rounded-[3.5vw] shadow cursor-pointer"
+         data-dl-id="{{ item.dl_id }}">
+      <div class="card_head pb-[1vw] flex justify-between border-b-2 border-dotted border-[#cccccc]">
+        <p class="px-[2vw] text-[4vw] text-[#ABABAB]">#{{ item.dl_id.split('-')[0] }}···</p>
+      </div>
+      <div class="card_body px-[2vw] pt-[3vw] text-black text-[4vw]">
+        <div class="from">
+          <div class="from_head flex items-center gap-[2vw]">
+            <p class="text-white bg-[#BAC0C8] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">F</p>
+            <p class="from_name">{{ item.delivery_start }}</p>
+          </div>
+          <div class="from_body ml-[9vw] text-[3.5vw] text-gray-600">
+            {{ item.s_time_formatted | default('출발시간 없음') }}
+          </div>
+        </div>
+
+        <div class="to mt-[3vw]">
+          <div class="to_head flex items-center gap-[2vw]">
+            <p class="text-white bg-[#2565CB] w-[7vw] h-[7vw] rounded-full flex justify-center items-center">T</p>
+            <p class="to_name">{{ item.delivery_arrive }}</p>
+          </div>
+          <div class="to_body ml-[9vw] text-[3.5vw] text-gray-600">
+            {{ item.f_time_formatted | default('도착시간 없음') }}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if not deliveryList or deliveryList | length == 0 %}
+  <p class="text-center text-[4vw] text-gray-500 mt-[4vw]">
+    해당 날짜의 배송 내역이 없습니다.
+  </p>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', () => {
+      const dlId = card.dataset.dlId;
+      if (dlId) {
+        window.location.href = `/detail?dl_id=${dlId}`;
+      }
+    });
+  });
+</script>
+{% endblock %}
