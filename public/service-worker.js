@@ -24,11 +24,12 @@ self.addEventListener('install', event => {
         urlsToCache.map(async url => {
           try {
             const response = await fetch(url, { redirect: 'follow' });
-            if (response.ok) {
-              await cache.put(url, response);
+            // 리다이렉트 응답(3xx)이면 캐시하지 않음
+            if (response.ok && !response.redirected) {
+              await cache.put(url, response.clone());
               console.log(`✅ 캐시 성공: ${url}`);
             } else {
-              console.warn(`⚠️ 캐시 실패 (응답 오류): ${url} - ${response.status}`);
+              console.warn(`⚠️ 캐시 실패 (응답 오류 또는 리다이렉트): ${url} - ${response.status}`);
             }
           } catch (err) {
             console.warn(`❌ 캐시 실패: ${url}`, err);
@@ -39,12 +40,19 @@ self.addEventListener('install', event => {
   );
 });
 
-// 요청 가로채기
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request, { redirect: 'follow' });
-    }).catch(err => {
+    caches.match(event.request).then(cachedResponse => {
+      if (cachedResponse) {
+        // 만약 캐시 응답이 리다이렉트면 무시하고 네트워크로 다시 시도
+        if (cachedResponse.type === 'opaqueredirect' || (cachedResponse.status >= 300 && cachedResponse.status < 400)) {
+          return fetch(event.request, { redirect: 'follow' });
+        }
+        return cachedResponse;
+      }
+      // 캐시에 없으면 네트워크 fetch
+      return fetch(event.request, { redirect: 'follow' });
+    }).catch(() => {
       return new Response("오프라인 상태입니다.", {
         status: 408,
         statusText: "Network Timeout"
