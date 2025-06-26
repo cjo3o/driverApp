@@ -4,7 +4,6 @@ const urlsToCache = [
   "/main.html",
   "/login.html",
   "/app.js",
-  "../app.js",
   "/manifest.json",
   "/icons/home.png",
   "/icons/bell.png",
@@ -33,10 +32,6 @@ self.addEventListener('install', event => {
 // 요청 가로채기
 self.addEventListener('fetch', event => {
   event.respondWith(
-    fetch(event.request, {
-      redirect: 'follow',
-    }),
-
     caches.match(event.request).then(response => {
       return response || fetch(event.request);
     })
