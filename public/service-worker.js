@@ -1,13 +1,9 @@
-const CACHE_NAME = "driver-app-cache-v1";
+const CACHE_NAME = 'pwa-cache-v1';
 const urlsToCache = [
-  "/",
-  "/main.html",
-  "/login.html",
-  "/app.js",
-  "/manifest.json",
-  "/icons/home.png",
-  "/icons/bell.png",
-  "/icons/bluearrow.png"
+  '/',
+  '/manifest.json',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
 ];
 
 // 설치 단계: 캐시 저장

@@ -1,66 +1,70 @@
-import express from "express";
-import webpush from "web-push";
-import dotenv from "dotenv";
-import { createClient } from "@supabase/supabase-js";
+const express = require('express');
+const nunjucks = require('nunjucks');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const expressSession = require('express-session');
+const path = require('path');
+const webpush = require('web-push');
 
-dotenv.config();
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
 
-// 1️⃣ Supabase 클라이언트 설정
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY // SERVICE KEY여야 전체 접근 가능
-);
-
-// 2️⃣ VAPID 정보 설정
 webpush.setVapidDetails(
-  `mailto:${process.env.VAPID_EMAIL}`,
-  process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
+    'mailto:kimyoott@naver.com',
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
 );
+const app = express();
 
-// 3️⃣ 푸시 알림 전송 API
-app.post("/send-push", async (req, res) => {
-  console.log("🔥 요청 본문:", req.body);
-  const { userId, title, body } = req.body;
-  console.log("📦 req.body:", req.body);
-  if (!userId || !title || !body) {
-    return res.status(400).json({ error: "userId, title, body는 필수입니다." });
-  }
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
+app.use(expressSession({
+    secret: 'asdf1234',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: false,
+        secure: false,
+    },
+    name: "session-cookie",
+}));
 
-  // ① Supabase에서 구독 정보 찾기
-  const { data, error } = await supabase
-    .from("subscription")
-    .select("subscription")
-    .eq("user_id", userId)
-    .maybeSingle();
+app.set('port', 7777);
+app.set('view engine', 'html');
+app.set('views', path.join(__dirname, 'views'));
 
-    if (error) {
-      console.error("❌ Supabase 에러:", error.message);
-      return res.status(500).json({ error: "Supabase 오류" });
-    }
-  
-    if (!data) {
-      return res.status(404).json({ error: "구독 정보 없음" });
-    }
-  
-    const subscription = data.subscription;
-console.log("🔥 subscription:", subscription);
-  // ② 푸시 발송
-  try {
-    await webpush.sendNotification(subscription, JSON.stringify({ title, body }));
-    console.log("✅ 푸시 발송 성공");
-    return res.status(200).json({ success: true, message: "푸시 발송 완료" });
-  } catch (err) {
-    console.error("❌ 푸시 발송 실패:", err);
-    return res.status(500).json({ error: "푸시 발송 실패", detail: err.message });
-  }
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
+nunjucks.configure('views', {
+    express: app,
+    watch: true,
 });
 
-// 4️⃣ 서버 실행
-const PORT = process.env.PORT || 5555;
-app.listen(PORT, () => {
-  console.log(`🚀 푸시 서버 실행 중: http://localhost:${PORT}`);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const mainRouter = require('./routes/mainRouter.js');
+const loginRouter = require('./routes/loginRouter.js');
+const alertRouter = require('./routes/alertRouter.js');
+const moneyRouter = require('./routes/moneyRouter.js');
+const dailyListRouter = require('./routes/dailyListRouter.js');
+const detailRouter = require('./routes/detailRouter.js');
+app.use((req,res,next)=>{
+    console.log("미들웨어 실행 되는거 맞음?");
+    next();
+});
+app.use('/', mainRouter);
+app.use('/login', loginRouter);
+app.use('/alert', alertRouter);
+app.use('/money', moneyRouter);
+app.use('/daily', dailyListRouter);
+app.use('/detail', detailRouter);
+
+app.listen(app.get('port'), ()=>{
+    console.log(app.get('port'), '번 포트에서 대기 중')
 });

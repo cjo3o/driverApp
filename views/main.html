@@ -28,6 +28,7 @@
         </div>
         <div
             class="order_list px-[4vw] py-[2vh] h-full max-h-[50vh] mt-[1.5vw] flex flex-col gap-[3vw] overflow-y-auto">
+            {% if resData.length > 0 %}
             {% for item in resData %}
             <div class="card p-[1vw] bg-white rounded-[3.5vw]">
                 <div class="card_head pb-[1vw] flex justify-between border-b-2 border-dotted border-[#cccccc]">
@@ -70,6 +71,12 @@
                 </div>
             </div>
             {% endfor %}
+            {% else %}
+            <div class="flex flex-col items-center justify-center py-[8vh] px-[4vw]">
+                <p class="text-[4.5vw] text-gray-400 font-medium">새로운 주문이 없습니다</p>
+                <p class="text-[3.5vw] text-gray-300 mt-[2vw]">잠시 후 다시 확인해보세요</p>
+            </div>
+            {% endif %}
         </div>
         <div class="my_list p-[4vw] h-full max-h-[50vh] mt-[1.5vw] hidden flex-col gap-[3vw] overflow-y-auto">
             <p class="text-[4vw]">
@@ -228,6 +235,7 @@
     const selectOption = document.querySelector('.select_option');
     const mainContainer = document.querySelector('.main_container');
     const bodyContainer = document.querySelector('.body_container');
+
 
     // if (navigator.geolocation) {
     //     navigator.geolocation.getCurrentPosition(

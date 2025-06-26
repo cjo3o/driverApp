@@ -3,43 +3,50 @@ const router = express.Router();
 const supabase = require('../utils/supa');
 
 router.get('/', async (req, res, next) => {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+
     const now = new Date();
     const days = ['일', '월', '화', '수', '목', '금', '토'];
     const dayOfWeek = days[now.getDay()];
     const month = now.getMonth() + 1;
     const date = now.getDate();
-    let resData = [];
 
-    if (!req.session.user) {
-        return res.redirect('/login');
-    }
+    let resData = [];
+    let myList_waiting = [];
+    let myList_delivering = [];
+    let myList_complete = [];
 
     try {
-        const { data, error } = await supabase
+        const { data } = await supabase
             .from('delivery')
             .select('*')
             .eq('situation', '접수')
             .order('delivery_date', { ascending: true });
+
         resData = data;
-        console.log(resData);
     } catch (error) {
-        console.log(error);
-    };
+        console.log('delivery 조회 오류:', error);
+    }
 
-    const { data: myList, error: myListError } = await supabase
-        .from('deliveryList')
-        .select('*')
-        .eq('driver_id', req.session.user?.id);
-    console.log('myList', myList);
+    try {
+        const { data: myList } = await supabase
+            .from('deliveryList')
+            .select('*')
+            .eq('driver_id', req.session.user.id);
 
-    const myList_waiting = myList?.filter(item => item.status === '배송대기');
-    const myList_delivering = myList?.filter(item => item.status === '배송중');
-    const myList_complete = myList?.filter(item => {
-        if (item.status === '배송완료' && item.f_time.split('T')[0] === now.toISOString().split('T')[0]) {
-            console.log('배송완료', item);
-            return item;
-        }
-    });
+        myList_waiting = myList?.filter(item => item.status === '배송대기') ?? [];
+        myList_delivering = myList?.filter(item => item.status === '배송중') ?? [];
+        myList_complete = myList?.filter(item => {
+            return (
+                item.status === '배송완료' &&
+                item.f_time?.split('T')[0] === now.toISOString().split('T')[0]
+            );
+        }) ?? [];
+    } catch (error) {
+        console.log('deliveryList 조회 오류:', error);
+    }
 
     res.render('main', {
         title: '메인페이지',
@@ -53,5 +60,6 @@ router.get('/', async (req, res, next) => {
         myList_complete
     });
 });
+
 
 module.exports = router;
