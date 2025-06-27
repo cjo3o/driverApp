@@ -8,6 +8,7 @@ router.get('/', (req, res) => {
     res.render('alert');
 });
 
+
 // 알림 등록
 router.post('/', async (req, res) => {
     const { dl_id, status } = req.body;
@@ -107,6 +108,39 @@ router.post('/', async (req, res) => {
           console.error("❌ 서버 오류:", err.message);
           return res.status(500).json({ error: "서버 내부 오류", detail: err.message });
         }
+      });
+
+      router.post("/subscribe", async (req, res) => {
+        console.log("✅ POST /subscribe 호출됨");
+      
+        if (!req.body) {
+          console.error("❌ body가 없음");
+          return res.status(400).json({ message: "body 없음" });
+        }
+      
+        const { user_id, subscription } = req.body;
+      
+        if (!user_id || !subscription) {
+          console.error("❌ 필수 항목 누락됨", req.body);
+          return res.status(400).json({ message: "user_id 또는 subscription 누락" });
+        }
+      
+        console.log("💬 받은 구독 데이터:", user_id, subscription);
+      
+        const { error } = await supabase
+            .from("subscription")
+            .insert({
+              user_id,
+              subscription, // ✅ JSON.stringify 제거: Supabase가 json으로 인식
+              created_at: getKstISOString(),
+            });
+      
+        if (error) {
+          console.error("❌ Supabase insert error:", error);
+          return res.status(400).json({ message: "DB insert 실패", error: error.message });
+        }
+      
+        res.status(200).json({ message: "구독 성공", received: true });
       });
 
 // 알림 리스트 조회
