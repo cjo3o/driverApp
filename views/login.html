@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, minimum-scale=1.0">
+        content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="manifest" href="/public/manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="/public/icons/icon-192x192.png">
@@ -12,116 +13,206 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <title>{{title}}</title>
 </head>
+
 <body class="p-0 m-0 box-border">
-{% block content %}
-<div class="bg-gray-100 w-full h-screen flex flex-col justify-center items-center">
-    <div class="w-full h-full flex flex-col justify-center items-center">
-        <p class="font-bold text-[10vw] text-center text-gray-800 mb-[6vw]">로그인</p>
-        <div class="w-auto max-w-[600px] mx-auto flex flex-col gap-[3vw] px-[5vw] box-border">
-            <div class="flex flex-col gap-[2vw]">
-                <label class="font-bold text-[4vw] text-gray-700">아이디</label>
-                <input id="id" type="text" value="driver021"
-                       class="border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent px-[3vw] py-[2vw] border rounded-md w-full text-[4vw]">
-            </div>
-            <div class="flex flex-col gap-[2vw]">
-                <label class="font-bold text-[4vw] text-gray-700">비밀번호</label>
-                <input id="pw" type="password" value="711111"
-                       class="border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent px-[3vw] py-[2vw] border rounded-md w-full text-[4vw]">
-            </div>
-            <button class="font-bold text-[4vw] text-white bg-[#667FFF] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full py-[2vw] rounded-md transition-colors duration-200"
+    {% block content %}
+    <div class="bg-gray-100 w-full h-screen flex flex-col justify-center items-center">
+        <div class="w-full h-full flex flex-col justify-center items-center">
+            <p class="font-bold text-[10vw] text-center text-gray-800 mb-[6vw]">로그인</p>
+            <div class="w-auto max-w-[600px] mx-auto flex flex-col gap-[3vw] px-[5vw] box-border">
+                <div class="flex flex-col gap-[2vw]">
+                    <label class="font-bold text-[4vw] text-gray-700">아이디</label>
+                    <input id="id" type="text" value="driver021"
+                        class="border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent px-[3vw] py-[2vw] border rounded-md w-full text-[4vw]">
+                </div>
+                <div class="flex flex-col gap-[2vw]">
+                    <label class="font-bold text-[4vw] text-gray-700">비밀번호</label>
+                    <input id="pw" type="password" value="711111"
+                        class="border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent px-[3vw] py-[2vw] border rounded-md w-full text-[4vw]">
+                </div>
+                <button
+                    class="font-bold text-[4vw] text-white bg-[#667FFF] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full py-[2vw] rounded-md transition-colors duration-200"
                     id="login">
-                로그인
-            </button>
+                    로그인
+                </button>
+                <button id="installPWA"
+                    class="flex items-center justify-center gap-2 font-bold text-[4vw] text-[#2b5cff] border-2 border-[#2b5cff] bg-white hover:bg-[#f0f6ff] w-full py-[2vw] rounded-lg transition-all duration-200 hidden mt-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-[5vw] h-[5vw] text-[#2b5cff]" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 4v12m0 0l-4-4m4 4l4-4m-7 8h10" />
+                    </svg>
+                    앱 설치하기
+                </button>
+                <button id="iosInstallGuide"
+                    class="w-full mt-2 py-[2vw] rounded-lg border-2 border-[#2b5cff] text-[3.5vw] text-[#2b5cff] font-semibold bg-white hover:bg-[#f0f6ff] flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-[4vw] h-[4vw] text-[#2b5cff]" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16M12 4v16" />
+                    </svg>
+                    iPhone 설치 안내
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- 모달 -->
-<div id="modal" class="hidden fixed inset-0 z-50 overflow-auto bg-gray-100 bg-opacity-30 flex items-center justify-center">
-    <div class="bg-white rounded-lg shadow-xl p-6 w-80 max-w-sm mx-4">
-        <h3 id="modalMessage" class="font-bold text-lg mb-4 text-gray-800 text-center"></h3>
-        <div class="flex justify-center">
-            <button id="closeModal" class="bg-[#667FFF] hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">확인</button>
+    <!-- 모달 -->
+    <div id="modal"
+        class="hidden fixed inset-0 z-50 overflow-auto bg-gray-100 bg-opacity-30 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-80 max-w-sm mx-4">
+            <h3 id="modalMessage" class="font-bold text-lg mb-4 text-gray-800 text-center"></h3>
+            <div class="flex justify-center">
+                <button id="closeModal"
+                    class="bg-[#667FFF] hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">확인</button>
+            </div>
         </div>
     </div>
-</div>
-{% endblock %}
-{% block script %}
-<script>
-    // 로그인 함수
-    async function performLogin() {
-        const id = document.getElementById('id').value;
-        const pw = document.getElementById('pw').value;
 
-        try {
-            const response = await axios.post('/login', {id, pw});
-            
-            // 로그인 성공 시 메인 페이지로 이동
-            if (response.status === 200) {
-                window.location.href = '/';
+    <div id="iosModal"
+        class="hidden fixed inset-0 z-50 overflow-auto bg-gray-100 bg-opacity-30 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-80 max-w-sm mx-4">
+            <h3 class="font-bold text-lg mb-2 text-gray-800 text-center">iPhone 홈 화면에 추가</h3>
+            <ol class="list-decimal list-inside text-gray-700 text-base mb-4">
+                <li>하단의 <span class="inline-block px-2 py-1 bg-gray-200 rounded">공유</span> 버튼을 누르세요.</li>
+                <li>아래로 스크롤하여 <span class="inline-block px-2 py-1 bg-gray-200 rounded">홈 화면에 추가</span>를 선택하세요.</li>
+                <li>오른쪽 상단의 <span class="inline-block px-2 py-1 bg-gray-200 rounded">추가</span> 버튼을 누르세요.</li>
+            </ol>
+            <div class="flex justify-center">
+                <button id="closeIosModal"
+                    class="bg-[#2b5cff] hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">확인</button>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+    {% block script %}
+    <script>
+        // 로그인 함수
+        async function performLogin() {
+            const id = document.getElementById('id').value;
+            const pw = document.getElementById('pw').value;
+
+            try {
+                const response = await axios.post('/login', { id, pw });
+
+                // 로그인 성공 시 메인 페이지로 이동
+                if (response.status === 200) {
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                // 로그인 실패 시 모달 표시
+                const modal = document.getElementById('modal');
+                const modalMessage = document.getElementById('modalMessage');
+
+                if (error.response && error.response.data && error.response.data.error) {
+                    modalMessage.textContent = error.response.data.error;
+                } else {
+                    modalMessage.textContent = '로그인 중 오류가 발생했습니다.';
+                }
+
+                modal.classList.remove('hidden');
             }
-        } catch (error) {
-            // 로그인 실패 시 모달 표시
-            const modal = document.getElementById('modal');
-            const modalMessage = document.getElementById('modalMessage');
-            
-            if (error.response && error.response.data && error.response.data.error) {
-                modalMessage.textContent = error.response.data.error;
-            } else {
-                modalMessage.textContent = '로그인 중 오류가 발생했습니다.';
+        }
+
+        // 로그인 버튼 클릭 이벤트
+        document.getElementById('login').addEventListener('click', performLogin);
+
+        // 엔터 키 이벤트 (아이디, 비밀번호 입력 필드에서)
+        document.getElementById('id').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                performLogin();
             }
-            
-            modal.classList.remove('hidden');
-        }
-    }
-
-    // 로그인 버튼 클릭 이벤트
-    document.getElementById('login').addEventListener('click', performLogin);
-
-    // 엔터 키 이벤트 (아이디, 비밀번호 입력 필드에서)
-    document.getElementById('id').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            performLogin();
-        }
-    });
-
-    document.getElementById('pw').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            performLogin();
-        }
-    });
-
-    // 모달 닫기 버튼 이벤트
-    document.getElementById('closeModal').addEventListener('click', function() {
-        document.getElementById('modal').classList.add('hidden');
-    });
-
-    // 모달 외부 클릭 시 닫기
-    document.getElementById('modal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            this.classList.add('hidden');
-        }
-    });
-
-    // 모달에서 엔터 키 누르면 닫기
-    document.getElementById('modal').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            this.classList.add('hidden');
-        }
-    });
-</script>
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
-            navigator.serviceWorker.register('/public/service-worker.js')
-                .then(function (registration) {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                }, function (err) {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
         });
-    }
-</script>
-{% endblock %}
+
+        document.getElementById('pw').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                performLogin();
+            }
+        });
+
+        // 모달 닫기 버튼 이벤트
+        document.getElementById('closeModal').addEventListener('click', function () {
+            document.getElementById('modal').classList.add('hidden');
+        });
+
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('modal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+
+        // 모달에서 엔터 키 누르면 닫기
+        document.getElementById('modal').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                this.classList.add('hidden');
+            }
+        });
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/public/service-worker.js')
+                    .then(function (registration) {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }, function (err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+    <script>
+        let deferredPrompt;
+        const installBtn = document.getElementById('installPWA');
+
+        function isIOS() {
+            return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+        }
+        if (isIOS()) {
+            document.getElementById('iosInstallGuide').classList.remove('hidden');
+        } else {
+            document.getElementById('iosInstallGuide').classList.add('hidden');
+        }
+
+        // beforeinstallprompt 이벤트 감지
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (!isIOS()) {
+                installBtn.classList.remove('hidden');
+            }
+        });
+
+        // 설치 버튼 클릭 시 프롬프트 실행
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBtn.classList.add('hidden');
+                }
+                deferredPrompt = null;
+            }
+        });
+    </script>
+    <script>
+        // iOS 설치 안내 모달 열기
+        document.getElementById('iosInstallGuide').addEventListener('click', function () {
+            document.getElementById('iosModal').classList.remove('hidden');
+        });
+
+        // iOS 설치 안내 모달 닫기
+        document.getElementById('closeIosModal').addEventListener('click', function () {
+            document.getElementById('iosModal').classList.add('hidden');
+        });
+
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('iosModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+    </script>
+    {% endblock %}
 </body>
+
 </html>
