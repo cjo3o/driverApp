@@ -53,7 +53,6 @@ const moneyRouter = require('./routes/moneyRouter.js');
 const dailyListRouter = require('./routes/dailyListRouter.js');
 const detailRouter = require('./routes/detailRouter.js');
 app.use((req,res,next)=>{
-    console.log("미들웨어 실행 되는거 맞음?");
     next();
 });
 app.use('/', mainRouter);
