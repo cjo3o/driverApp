@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
 const path = require('path');
 const webpush = require('web-push');
+const cors = require("cors");
 
 require('dotenv').config();
 
@@ -31,6 +32,11 @@ app.use(expressSession({
     },
     name: "session-cookie",
 }));
+
+app.use(cors({
+    origin: "https://with-go-mobile.vercel.app",
+    credentials: true,
+  }));
 
 app.set('port', 7777);
 app.set('view engine', 'html');
