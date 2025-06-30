@@ -97,7 +97,7 @@ router.post('/', async (req, res) => {
                 });
             })
           );
-      
+      results();
           return res.status(200).json({
             success: true,
             message: "알림 기록 및 푸시 전송 완료",
