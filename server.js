@@ -34,7 +34,7 @@ app.use(expressSession({
 }));
 
 app.use(cors({
-    origin: "https://mobile-test-sigma.vercel.app",
+    origin: "https://with-go-mobile.vercel.app",
     credentials: true,
   }));
 
